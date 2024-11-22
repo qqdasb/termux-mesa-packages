@@ -1,0 +1,9 @@
+--- a/src/venus/vkr_device_memory.c
++++ b/src/venus/vkr_device_memory.c
+@@ -10,3 +10,6 @@
+ #include "vkr_physical_device.h"
+ 
++#include "syscall.h"
++#define memfd_create(name,flags) syscall(SYS_memfd_create,name,flags)
++
+ static bool
