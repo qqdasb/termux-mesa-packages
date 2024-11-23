@@ -109,7 +109,7 @@ index ff57a259046..dff8ae077a6 100644
  
  static uint64_t fence_sequence;
  
-+#ifdef __ANDROID__
++#ifdef __TERMUX__
 +static void thread_signal_handler (int signum) {
 +   pthread_exit (0);
 +}
@@ -122,7 +122,7 @@ index ff57a259046..dff8ae077a6 100644
        .events = POLLIN
     };
  
-+#ifndef __ANDROID__
++#ifndef __TERMUX__
     pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
 +#endif
     for (;;) {
@@ -132,7 +132,7 @@ index ff57a259046..dff8ae077a6 100644
  static void
  wsi_display_stop_wait_thread(struct wsi_display *wsi)
  {
-+#ifdef __ANDROID__
++#ifdef __TERMUX__
 +   struct sigaction actions;
 +   memset (&actions, 0, sizeof (actions));
 +   sigemptyset (&actions.sa_mask);
@@ -143,7 +143,7 @@ index ff57a259046..dff8ae077a6 100644
 +
     mtx_lock(&wsi->wait_mutex);
     if (wsi->wait_thread) {
-+#ifndef __ANDROID__
++#ifndef __TERMUX__
        pthread_cancel(wsi->wait_thread);
 +#else
 +      pthread_kill(wsi->wait_thread, SIGUSR2);
@@ -155,7 +155,7 @@ index ff57a259046..dff8ae077a6 100644
  
     int udev_fd = udev_monitor_get_fd(mon);
  
-+#ifndef __ANDROID__
++#ifndef __TERMUX__
     pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
 +#endif
  
@@ -165,7 +165,7 @@ index ff57a259046..dff8ae077a6 100644
     struct wsi_display *wsi =
        (struct wsi_display *) wsi_device->wsi[VK_ICD_WSI_PLATFORM_DISPLAY];
  
-+#ifdef __ANDROID__
++#ifdef __TERMUX__
 +   struct sigaction actions;
 +   memset (&actions, 0, sizeof (actions));
 +   sigemptyset (&actions.sa_mask);
@@ -181,7 +181,7 @@ index ff57a259046..dff8ae077a6 100644
        wsi_display_stop_wait_thread(wsi);
  
        if (wsi->hotplug_thread) {
-+#ifndef __ANDROID__
++#ifndef __TERMUX__
           pthread_cancel(wsi->hotplug_thread);
 +#else
 +         pthread_kill(wsi->hotplug_thread, SIGUSR2);
@@ -197,7 +197,7 @@ index 9835f8f990b..ba73f679cf9 100644
  static VkResult
  wsi_dma_buf_export_sync_file(int dma_buf_fd, int *sync_file_fd)
  {
-+   #if defined (__ANDROID__)
++   #if defined (__TERMUX__)
 +      return VK_ERROR_FEATURE_NOT_PRESENT;
 +   #else
     /* Don't keep trying an IOCTL that doesn't exist. */
@@ -213,7 +213,7 @@ index 9835f8f990b..ba73f679cf9 100644
  static VkResult
  wsi_dma_buf_import_sync_file(int dma_buf_fd, int sync_file_fd)
  {
-+   #if defined (__ANDROID__)
++   #if defined (__TERMUX__)
 +      return VK_ERROR_FEATURE_NOT_PRESENT;
 +   #else
     /* Don't keep trying an IOCTL that doesn't exist. */
