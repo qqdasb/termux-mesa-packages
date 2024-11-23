@@ -49,7 +49,7 @@ ac_cv_path_RAWCPP=/usr/bin/cpp
 --disable-linux-acpi
 --disable-linux-apm
 --enable-xorg
---disable-glamor
+--enable-glamor
 --disable-dmx
 --disable-xvfb
 --disable-xnest
