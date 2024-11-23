@@ -10,7 +10,6 @@ TERMUX_PKG_SHA256=a0ce37228679647268a83b3652d859dcf23d6f6430d751489d4464f6de6459
 TERMUX_PKG_DEPENDS="libandroid-shmem, libc++, libdrm, libx11, libxcb, libxshmfence, libwayland, vulkan-loader-generic, zlib, zstd"
 TERMUX_PKG_BUILD_DEPENDS="libwayland-protocols, libxrandr, xorgproto"
 TERMUX_PKG_API_LEVEL=26
-TERMUX_DEBUG_BUILD=true
 
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 --cmake-prefix-path $TERMUX_PREFIX
