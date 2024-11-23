@@ -7,9 +7,7 @@ TERMUX_PKG_SRCURL=https://xorg.freedesktop.org/releases/individual/xserver/xorg-
 TERMUX_PKG_SHA256=8f2102cebdc4747d1656c1099ef610f5063c7422c24a177e300de569b354ee35
 TERMUX_PKG_AUTO_UPDATE=true
 TERMUX_PKG_DEPENDS="libandroid-shmem, libdrm, libpciaccess, libpixman, libx11, libxau, libxcvt, libxfont2, libxinerama, libxkbfile, libxshmfence, opengl, openssl, xkeyboard-config, xorg-protocol-txt, xorg-xkbcomp"
-
-# Needed for Xephyr
-TERMUX_PKG_BUILD_DEPENDS="xcb-util, xcb-util-image, xcb-util-keysyms, xcb-util-renderutil, xcb-util-wm"
+TERMUX_PKG_BUILD_DEPENDS="xcb-util, xcb-util-image, xcb-util-keysyms, xcb-util-renderutil, xcb-util-wm, libepoxy"
 
 TERMUX_PKG_RECOMMENDS="xf86-video-dummy, xf86-input-void"
 TERMUX_PKG_NO_STATICSPLIT=true
