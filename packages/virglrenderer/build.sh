@@ -15,4 +15,5 @@ termux_step_pre_configure() {
 	# error: using an array subscript expression within 'offsetof' is a Clang extension [-Werror,-Wgnu-offsetof-extensions]
 	# list_for_each_entry_safe(struct vrend_linked_shader_program, ent, &shader->programs, sl[shader->sel->type])
 	CPPFLAGS+=" -Wno-error=gnu-offsetof-extensions"
+	LDFLAGS+=" -landroid-shmem"
 }
