@@ -22,9 +22,9 @@ index 18817ad73d1..1c55f185ef6 100644
 -      if (!dri2_initialize_wayland_drm_extensions(dri2_dpy) && !disp->Options.ForceSoftware)
 -         goto cleanup;
 +      dri2_initialize_wayland_drm_extensions(dri2_dpy);
-    }
  
-    dri2_dpy->driver_name = strdup(disp->Options.Zink ? "zink" : "swrast");
+       if (!disp->Options.ForceSoftware) {
+         loader_get_user_preferred_fd(&dri2_dpy->fd_render_gpu,
 diff --git a/src/gallium/drivers/zink/zink_screen.c b/src/gallium/drivers/zink/zink_screen.c
 index 75e4997d4be..5fcc75bccd1 100644
 --- a/src/gallium/drivers/zink/zink_screen.c
@@ -59,16 +59,3 @@ index 75e4997d4be..5fcc75bccd1 100644
     const VkSemaphoreGetFdInfoKHR get_fd_info = {
        .sType = VK_STRUCTURE_TYPE_SEMAPHORE_GET_FD_INFO_KHR,
        .semaphore = sem,
-diff --git a/src/gallium/targets/dri/dri_target.c b/src/gallium/targets/dri/dri_target.c
-index 6604afe99f5..ad0fbf2bc03 100644
---- a/src/gallium/targets/dri/dri_target.c
-+++ b/src/gallium/targets/dri/dri_target.c
-@@ -143,7 +143,7 @@ DEFINE_LOADER_DRM_ENTRYPOINT(lima)
- #endif
- 
- #if defined(GALLIUM_ZINK)
--#if DETECT_OS_ANDROID
-+#if DETECT_OS_ANDROID && !defined (__TERMUX__)
- DEFINE_LOADER_DRM_ENTRYPOINT(zink);
- #else
- const __DRIextension **__driDriverGetExtensions_zink(void);

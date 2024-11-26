@@ -210,7 +210,7 @@ index ea2a45a2a3c..35c3488ede1 100644
 +
  static void
  fd_trace_record_ts(struct u_trace *ut, void *cs, void *timestamps,
-                    unsigned idx, uint32_t flags)
+                    uint64_t offset_B, uint32_t flags)
 @@ -662,11 +678,6 @@ fd_context_init(struct fd_context *ctx, struct pipe_screen *pscreen,
  
     ctx->in_fence_fd = -1;

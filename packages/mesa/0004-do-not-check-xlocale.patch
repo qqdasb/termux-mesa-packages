@@ -1,3 +1,4 @@
+--- ./meson.build
 +++ ./meson.build
 @@ -1403,8 +1403,8 @@
    endif

@@ -118,10 +118,10 @@ index e9eb4d8b796..a90b4a3df45 100644
  #ifdef __linux__
     /* Implementation without causing full enumeration of DRM devices. */
     if (loader_get_linux_pci_id_for_fd(fd, vendor_id, chip_id))
-diff --git a/src/loader/loader_dri3_helper.c b/src/loader/loader_dri3_helper.c
+diff --git a/src/gallium/frontends/dri/loader_dri3_helper.c b/src/gallium/frontends/dri/loader_dri3_helper.c
 index 6375143e290..dbfbd726c40 100644
---- a/src/loader/loader_dri3_helper.c
-+++ b/src/loader/loader_dri3_helper.c
+--- a/src/gallium/frontends/dri/loader_dri3_helper.c
++++ b/src/gallium/frontends/dri/loader_dri3_helper.c
 @@ -26,14 +26,13 @@
  #include <unistd.h>
  #include <string.h>
@@ -166,9 +166,9 @@ index 6375143e290..dbfbd726c40 100644
        xcb_free_pixmap(draw->conn, buffer->pixmap);
 -   xcb_sync_destroy_fence(draw->conn, buffer->sync_fence);
 -   xshmfence_unmap_shm(buffer->shm_fence);
-    draw->ext->image->destroyImage(buffer->image);
+    dri2_destroy_image(buffer->image);
     if (buffer->linear_buffer)
-       draw->ext->image->destroyImage(buffer->linear_buffer);
+       dri2_destroy_image(buffer->linear_buffer);
 @@ -1141,26 +1135,7 @@ loader_dri3_swap_buffers_msc(struct loader_dri3_drawable *draw,
        back->busy = 1;
        back->last_swap = draw->send_sbc;
@@ -196,19 +196,8 @@ index 6375143e290..dbfbd726c40 100644
  
        xcb_present_pixmap(draw->conn,
                           draw->drawable,
-@@ -1292,6 +1267,10 @@ loader_dri3_open(xcb_connection_t *conn,
-    int                          fd;
-    const xcb_query_extension_reply_t *extension;
- 
-+   const char *env = getenv("MESA_LOADER_DRIVER_OVERRIDE");
-+   if (env && !strcmp(env, "kgsl"))
-+      return loader_open_device("/dev/kgsl-3d0");
-+
-    xcb_prefetch_extension_data(conn, &xcb_dri3_id);
-    extension = xcb_get_extension_data(conn, &xcb_dri3_id);
-    if (!(extension && extension->present))
 @@ -1439,27 +1418,13 @@ dri3_alloc_render_buffer(struct loader_dri3_drawable *draw, unsigned int fourcc,
-    __DRIimage *pixmap_buffer = NULL, *linear_buffer_display_gpu = NULL;
+    struct dri_image *pixmap_buffer = NULL, *linear_buffer_display_gpu = NULL;
     int format = loader_fourcc_to_image_format(fourcc);
     xcb_pixmap_t pixmap;
 -   xcb_sync_fence_t sync_fence;
@@ -245,8 +234,8 @@ index 6375143e290..dbfbd726c40 100644
                                     buffer_fds);
     } else
  #endif
-@@ -1672,16 +1637,8 @@ dri3_alloc_render_buffer(struct loader_dri3_drawable *draw, unsigned int fourcc,
-                                   buffer_fds[0]);
+@@ -1672,21 +1637,14 @@ dri3_alloc_render_buffer(struct loader_dri3_drawable *draw, unsigned int fourcc,
+        cur_screen = draw->dri_screen_render_gpu;
     }
  
 -   xcb_dri3_fence_from_fd(draw->conn,
@@ -254,13 +243,18 @@ index 6375143e290..dbfbd726c40 100644
 -                          (sync_fence = xcb_generate_id(draw->conn)),
 -                          false,
 -                          fence_fd);
--
+    buffer->image = loader_dri3_get_pixmap_buffer(draw->conn, pixmap, cur_screen, fourcc,
+                                                  draw->multiplanes_available, &width, &height, buffer);
+ 
+    if (!buffer->image)
+       goto no_image;
+ 
     buffer->pixmap = pixmap;
-    buffer->own_pixmap = true;
--   buffer->sync_fence = sync_fence;
--   buffer->shm_fence = shm_fence;
+    buffer->own_pixmap = false;
     buffer->width = width;
     buffer->height = height;
+-   buffer->shm_fence = shm_fence;
+-   buffer->sync_fence = sync_fence;
  
 @@ -1703,9 +1660,6 @@ no_linear_buffer:
  no_image:
@@ -281,7 +275,7 @@ index 6375143e290..dbfbd726c40 100644
     int                                  width;
     int                                  height;
 -   int                                  fence_fd;
-    __DRIscreen                          *cur_screen;
+    struct dri_screen                          *cur_screen;
  
     if (buffer)
 @@ -1951,15 +1902,6 @@ dri3_get_pixmap_buffer(__DRIdrawable *driDrawable, unsigned int fourcc,
@@ -300,29 +294,16 @@ index 6375143e290..dbfbd726c40 100644
     /* Get the currently-bound screen or revert to using the drawable's screen if
      * no contexts are currently bound. The latter case is at least necessary for
      * obs-studio, when using Window Capture (Xcomposite) as a Source.
-@@ -1969,11 +1911,6 @@ dri3_get_pixmap_buffer(__DRIdrawable *driDrawable, unsigned int fourcc,
-        cur_screen = draw->dri_screen_render_gpu;
-    }
- 
--   xcb_dri3_fence_from_fd(draw->conn,
--                          pixmap,
--                          (sync_fence = xcb_generate_id(draw->conn)),
--                          false,
--                          fence_fd);
- #ifdef HAVE_DRI3_MODIFIERS
-    if (draw->multiplanes_available &&
-        draw->ext->image->base.version >= 15 &&
-@@ -2019,17 +1956,12 @@ dri3_get_pixmap_buffer(__DRIdrawable *driDrawable, unsigned int fourcc,
-    buffer->own_pixmap = false;
+@@ -1952,16 +1952,11 @@ dri3_get_pixmap_buffer(__DRIdrawable *driDrawable, unsigned int fourcc,
     buffer->width = width;
     buffer->height = height;
 -   buffer->shm_fence = shm_fence;
 -   buffer->sync_fence = sync_fence;
- 
+
     dri3_set_render_buffer(draw, buf_id, buffer);
- 
+
     return buffer;
- 
+
  no_image:
 -   xcb_sync_destroy_fence(draw->conn, sync_fence);
 -   xshmfence_unmap_shm(shm_fence);
@@ -330,3 +311,17 @@ index 6375143e290..dbfbd726c40 100644
     free(buffer);
  no_buffer:
     return NULL;
+diff --git a/src/x11/loader_x11.c b/src/x11/loader_x11.c
+--- a/src/x11/loader_x11.c
++++ a/src/x11/loader_x11.c
+@@ -46,6 +46,10 @@ x11_dri3_open(xcb_connection_t *conn,
+    int                          fd;
+    const xcb_query_extension_reply_t *extension;
+
++   const char *env = getenv("MESA_LOADER_DRIVER_OVERRIDE");
++   if (env && !strcmp(env, "kgsl"))
++      return loader_open_device("/dev/kgsl-3d0");
++
+    xcb_prefetch_extension_data(conn, &xcb_dri3_id);
+    extension = xcb_get_extension_data(conn, &xcb_dri3_id);
+    if (!(extension && extension->present))
