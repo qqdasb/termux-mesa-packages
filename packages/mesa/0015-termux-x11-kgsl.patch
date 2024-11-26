@@ -294,16 +294,17 @@ index 6375143e290..dbfbd726c40 100644
     /* Get the currently-bound screen or revert to using the drawable's screen if
      * no contexts are currently bound. The latter case is at least necessary for
      * obs-studio, when using Window Capture (Xcomposite) as a Source.
-@@ -1952,16 +1952,11 @@ dri3_get_pixmap_buffer(__DRIdrawable *driDrawable, unsigned int fourcc,
+@@ -1952,17 +1952,12 @@ dri3_get_pixmap_buffer(__DRIdrawable *driDrawable, unsigned int fourcc,
+    buffer->own_pixmap = false;
     buffer->width = width;
     buffer->height = height;
 -   buffer->shm_fence = shm_fence;
 -   buffer->sync_fence = sync_fence;
-
+ 
     dri3_set_render_buffer(draw, buf_id, buffer);
-
+ 
     return buffer;
-
+ 
  no_image:
 -   xcb_sync_destroy_fence(draw->conn, sync_fence);
 -   xshmfence_unmap_shm(shm_fence);
