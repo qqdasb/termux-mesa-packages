@@ -293,24 +293,6 @@ diff --git a/src/gallium/frontends/dri/loader_dri3_helper.c b/src/gallium/fronte
     /* Get the currently-bound screen or revert to using the drawable's screen if
      * no contexts are currently bound. The latter case is at least necessary for
      * obs-studio, when using Window Capture (Xcomposite) as a Source.
-@@ -1951,17 +1891,12 @@ dri3_get_pixmap_buffer(__DRIdrawable *driDrawable, unsigned int fourcc,
-    buffer->own_pixmap = false;
-    buffer->width = width;
-    buffer->height = height;
--   buffer->shm_fence = shm_fence;
--   buffer->sync_fence = sync_fence;
- 
-    dri3_set_render_buffer(draw, buf_id, buffer);
- 
-    return buffer;
- 
- no_image:
--   xcb_sync_destroy_fence(draw->conn, sync_fence);
--   xshmfence_unmap_shm(shm_fence);
--no_fence:
-    free(buffer);
- no_buffer:
-    return NULL;
 diff --git a/src/x11/loader_x11.c b/src/x11/loader_x11.c
 --- a/src/x11/loader_x11.c
 +++ a/src/x11/loader_x11.c
