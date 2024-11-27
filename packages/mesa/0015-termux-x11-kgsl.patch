@@ -119,7 +119,6 @@ index e9eb4d8b796..a90b4a3df45 100644
     /* Implementation without causing full enumeration of DRM devices. */
     if (loader_get_linux_pci_id_for_fd(fd, vendor_id, chip_id))
 diff --git a/src/gallium/frontends/dri/loader_dri3_helper.c b/src/gallium/frontends/dri/loader_dri3_helper.c
-index 6375143e290..dbfbd726c40 100644
 --- a/src/gallium/frontends/dri/loader_dri3_helper.c
 +++ b/src/gallium/frontends/dri/loader_dri3_helper.c
 @@ -26,14 +26,13 @@
@@ -278,7 +277,7 @@ index 6375143e290..dbfbd726c40 100644
     struct dri_screen                          *cur_screen;
  
     if (buffer)
-@@ -1951,15 +1902,6 @@ dri3_get_pixmap_buffer(__DRIdrawable *driDrawable, unsigned int fourcc,
+@@ -1952,15 +1902,6 @@ dri3_get_pixmap_buffer(__DRIdrawable *driDrawable, unsigned int fourcc,
     if (!buffer)
        goto no_buffer;
  
@@ -294,7 +293,7 @@ index 6375143e290..dbfbd726c40 100644
     /* Get the currently-bound screen or revert to using the drawable's screen if
      * no contexts are currently bound. The latter case is at least necessary for
      * obs-studio, when using Window Capture (Xcomposite) as a Source.
-@@ -1952,17 +1952,12 @@ dri3_get_pixmap_buffer(__DRIdrawable *driDrawable, unsigned int fourcc,
+@@ -1951,17 +1891,12 @@ dri3_get_pixmap_buffer(__DRIdrawable *driDrawable, unsigned int fourcc,
     buffer->own_pixmap = false;
     buffer->width = width;
     buffer->height = height;
