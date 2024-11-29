@@ -127,7 +127,7 @@ diff --git a/src/loader/loader_x11.c b/src/loader/loader_x11.c
  
 +   const char *env = getenv("MESA_LOADER_DRIVER_OVERRIDE");
 +   if (env && !strcmp(env, "kgsl"))
-+      return loader_open_device("/dev/kgsl-3d0");
++      return x11_open_device("/dev/kgsl-3d0");
 +
     xcb_prefetch_extension_data(conn, &xcb_dri3_id);
     extension = xcb_get_extension_data(conn, &xcb_dri3_id);
