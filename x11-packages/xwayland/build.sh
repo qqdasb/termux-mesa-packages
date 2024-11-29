@@ -24,7 +24,11 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -Dxcsecurity=true
 -Dxf86bigfont=true
 -Ddrm=true
+<<<<<<< HEAD
 -Dglamor=true
+=======
+-Dglamor=false
+>>>>>>> 5852433afd9e07b4bd7933a9e0fa56bfb641557d
 -Dxvfb=false
 -Dlibunwind=false
 -Dipv6=true
