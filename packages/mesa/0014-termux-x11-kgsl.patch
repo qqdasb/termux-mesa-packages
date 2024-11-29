@@ -132,6 +132,14 @@ diff --git a/src/loader/loader_x11.c b/src/loader/loader_x11.c
     xcb_prefetch_extension_data(conn, &xcb_dri3_id);
     extension = xcb_get_extension_data(conn, &xcb_dri3_id);
     if (!(extension && extension->present))
+@@ -29,6 +29,7 @@
+ #include <xcb/dri3.h>
+ #include <xcb/present.h>
+ #include <xcb/xfixes.h>
++#include "loader/loader.h"
+ #include "loader_x11.h"
+ /** x11_dri3_open
+  *
 diff --git a/src/gallium/frontends/dri/loader_dri3_helper.c b/src/gallium/frontends/dri/loader_dri3_helper.c
 index 6375143e290..dbfbd726c40 100644
 --- a/src/gallium/frontends/dri/loader_dri3_helper.c
