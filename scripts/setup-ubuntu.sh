@@ -149,6 +149,10 @@ PACKAGES+=" llvm-17-dev"
 PACKAGES+=" llvm-17-tools"
 PACKAGES+=" clang-17"
 
+# Needed by librusty-v8
+PACKAGES+=" libclang-rt-17-dev"
+PACKAGES+=" libclang-rt-17-dev:i386"
+
 # Needed for package smalltalk.
 PACKAGES+=" libsigsegv-dev"
 PACKAGES+=" zip"
@@ -323,9 +327,6 @@ $SUDO chmod a+r /etc/apt/trusted.gpg.d/apt.llvm.org.asc
 {
 	echo "deb [arch=amd64] http://apt.llvm.org/noble/ llvm-toolchain-noble-17 main"
 } | $SUDO tee /etc/apt/sources.list.d/apt-llvm-org.list > /dev/null
-
-# Add deadsnakes PPA to enable installing python 3.11:
-$SUDO add-apt-repository -y 'ppa:deadsnakes/ppa'
 
 $SUDO apt-get -yq update
 
