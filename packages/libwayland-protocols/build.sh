@@ -10,15 +10,5 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 "
 
 termux_step_pre_configure() {
-	_WRAPPER_BIN=$TERMUX_PKG_BUILDDIR/_wrapper/bin
-	mkdir -p $_WRAPPER_BIN
-	if [ "$TERMUX_ON_DEVICE_BUILD" = "false" ]; then
-		sed 's|@CMAKE@|'"$(command -v cmake)"'|g' \
-			$TERMUX_PKG_BUILDER_DIR/cmake-wrapper.in \
-			> $_WRAPPER_BIN/cmake
-		chmod 0700 $_WRAPPER_BIN/cmake
-		termux_setup_wayland_cross_pkg_config_wrapper
-		export LLVM_CONFIG="$TERMUX_PREFIX/bin/llvm-config"
-	fi
-	export PATH="$_WRAPPER_BIN:$PATH"
+	termux_setup_wayland_cross_pkg_config_wrapper
 }
