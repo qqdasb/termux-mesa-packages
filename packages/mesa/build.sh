@@ -32,7 +32,6 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -Dosmesa=true
 -Dglvnd=enabled
 -Dxmlconfig=disabled
-# -Dvulkan-layers=device-select,overlay,screenshot
 -Dshared-glapi=enabled
 -Dgbm=enabled
 -Dlibunwind=disabled
