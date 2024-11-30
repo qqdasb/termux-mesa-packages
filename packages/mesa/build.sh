@@ -32,7 +32,7 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -Dosmesa=true
 -Dglvnd=enabled
 -Dxmlconfig=disabled
--Dvulkan-layers=device-select,overlay,screenshot
+# -Dvulkan-layers=device-select,overlay,screenshot
 -Dshared-glapi=enabled
 -Dgbm=enabled
 -Dlibunwind=disabled
@@ -40,6 +40,8 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -Dxlib-lease=enabled
 -Dvulkan-beta=true
 -Dvideo-codecs=all
+-Dperfetto=true
+-Ddatasources=freedreno
 "
 
 termux_step_post_get_source() {
@@ -69,7 +71,7 @@ termux_step_pre_configure() {
 		TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" -Dgallium-drivers=swrast,virgl,zink,freedreno"
 		TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" -Dvulkan-drivers=swrast,freedreno"
 		TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" -Dfreedreno-kmds=msm,kgsl"
-		TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" -Dgallium-rusticl=true -Dgallium-xa=enabled"
+		TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" -Dgallium-rusticl=true -Dgallium-xa=enabled -Dtools=drm-shim,freedreno,glsl"
 	elif [ $TERMUX_ARCH = "aarch64" ]; then
 		TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" -Dgallium-drivers=swrast,virgl,zink,freedreno"
 		TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" -Dvulkan-drivers=swrast,freedreno,virtio"
