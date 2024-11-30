@@ -39,8 +39,6 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -Dxlib-lease=enabled
 -Dvulkan-beta=true
 -Dvideo-codecs=all
--Dperfetto=true
--Ddatasources=freedreno
 "
 
 termux_step_post_get_source() {
