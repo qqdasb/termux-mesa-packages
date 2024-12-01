@@ -1,9 +1,6 @@
-Disable multithreading by default because it seems to introduce a significant
-overhead when enabled.
-
 --- a/src/gallium/drivers/llvmpipe/lp_screen.c
 +++ b/src/gallium/drivers/llvmpipe/lp_screen.c
-@@ -1186,6 +1186,9 @@
+@@ -1183,6 +1183,9 @@
     screen->num_threads = debug_get_num_option("LP_NUM_THREADS",
                                                screen->num_threads);
     screen->num_threads = MIN2(screen->num_threads, LP_MAX_THREADS);
@@ -12,4 +9,4 @@ overhead when enabled.
 +#endif
  
  #if defined(HAVE_LIBDRM) && defined(HAVE_LINUX_UDMABUF_H)
- 
+    screen->udmabuf_fd = open("/dev/udmabuf", O_RDWR);
