@@ -37,7 +37,6 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -Dlibunwind=disabled
 -Dpower8=enabled
 -Dxlib-lease=enabled
--Dvulkan-beta=true
 -Dvideo-codecs=all
 "
 
@@ -73,7 +72,7 @@ termux_step_pre_configure() {
 		TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" -Dgallium-drivers=swrast,virgl,zink,freedreno"
 		TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" -Dvulkan-drivers=swrast,freedreno,virtio"
 		TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" -Dfreedreno-kmds=msm,kgsl,virtio,wsl"
-		TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" -Dgallium-xa=enabled"
+		TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" -Dgallium-xa=enabled -Dtools=drm-shim,freedreno,glsl"
 	elif [ $TERMUX_ARCH = "i686" ] || [ $TERMUX_ARCH = "x86_64" ]; then
 		TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" -Dgallium-drivers=swrast,virgl,zink"
 		TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" -Dvulkan-drivers=swrast"
