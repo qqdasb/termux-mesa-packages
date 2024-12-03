@@ -4,12 +4,13 @@ TERMUX_PKG_LICENSE="MIT"
 TERMUX_PKG_LICENSE_FILE="docs/license.rst"
 TERMUX_PKG_MAINTAINER="xMeM <haooy@outlook.com>"
 TERMUX_PKG_VERSION="24.2.7"
-TERMUX_PKG_REVISION=9
+TERMUX_PKG_REVISION=10
 TERMUX_PKG_SRCURL=https://archive.mesa3d.org/mesa-${TERMUX_PKG_VERSION}.tar.xz
-TERMUX_PKG_SHA256=a0ce37228679647268a83b3652d859dcf23d6f6430d751489d4464f6de6459fd
+TERMUX_PKG_SHA256=733d0bea242ed6a5bb5c806fe836792ce7f092d45a2f115b7b7e15897c9dd96f
 TERMUX_PKG_DEPENDS="libandroid-shmem, libc++, libdrm, libx11, libxcb, libxshmfence, libwayland, vulkan-loader-generic, zlib, zstd"
 TERMUX_PKG_BUILD_DEPENDS="libwayland-protocols, libxrandr, xorgproto"
 TERMUX_PKG_API_LEVEL=26
+TERMUX_DEBUG_BUILD=true
 
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 --cmake-prefix-path $TERMUX_PREFIX

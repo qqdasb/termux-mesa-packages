@@ -1,4 +1,4 @@
-From 875196978f484b3bb9278d079b83d3417b86bcc5 Mon Sep 17 00:00:00 2001
+From 713486775409bd7b24c8a40e3c03ff972dd8608b Mon Sep 17 00:00:00 2001
 From: xMeM <haooy@outlook.com>
 Date: Sat, 26 Oct 2024 19:19:39 +0800
 Subject: [PATCH 1/2] Android Vulkan wrapper
@@ -11,19 +11,19 @@ Signed-off-by: xMeM <haooy@outlook.com>
  meson_options.txt                             |   2 +-
  src/android_stub/nativewindow_stub.cpp        |   7 +
  src/vulkan/meson.build                        |   5 +-
- src/vulkan/wrapper/meson.build                |  93 ++++
+ src/vulkan/wrapper/meson.build                |  93 +++
  src/vulkan/wrapper/vk_entrypoints.py          |   1 +
  src/vulkan/wrapper/vk_extensions.py           |   1 +
- src/vulkan/wrapper/vk_wrapper_features_gen.py | 298 +++++++++++++
- .../wrapper/vk_wrapper_trampolines_gen.py     | 222 ++++++++++
- src/vulkan/wrapper/wrapper_device.c           | 411 ++++++++++++++++++
- src/vulkan/wrapper/wrapper_device_memory.c    | 398 +++++++++++++++++
- src/vulkan/wrapper/wrapper_instance.c         | 297 +++++++++++++
- src/vulkan/wrapper/wrapper_physical_device.c  | 215 +++++++++
- src/vulkan/wrapper/wrapper_private.h          |  94 ++++
+ src/vulkan/wrapper/vk_wrapper_features_gen.py | 298 ++++++++++
+ .../wrapper/vk_wrapper_trampolines_gen.py     | 222 +++++++
+ src/vulkan/wrapper/wrapper_device.c           | 411 +++++++++++++
+ src/vulkan/wrapper/wrapper_device_memory.c    | 547 ++++++++++++++++++
+ src/vulkan/wrapper/wrapper_instance.c         | 297 ++++++++++
+ src/vulkan/wrapper/wrapper_physical_device.c  | 215 +++++++
+ src/vulkan/wrapper/wrapper_private.h          |  94 +++
  src/vulkan/wsi/wsi_common.c                   |  26 +-
  src/vulkan/wsi/wsi_common.h                   |   2 +
- 16 files changed, 2069 insertions(+), 8 deletions(-)
+ 16 files changed, 2218 insertions(+), 8 deletions(-)
  create mode 100644 src/vulkan/wrapper/meson.build
  create mode 120000 src/vulkan/wrapper/vk_entrypoints.py
  create mode 120000 src/vulkan/wrapper/vk_extensions.py
@@ -1175,10 +1175,10 @@ index 00000000000..1fde56970d0
 +
 diff --git a/src/vulkan/wrapper/wrapper_device_memory.c b/src/vulkan/wrapper/wrapper_device_memory.c
 new file mode 100644
-index 00000000000..46b663d011d
+index 00000000000..3d375e8cecb
 --- /dev/null
 +++ b/src/vulkan/wrapper/wrapper_device_memory.c
-@@ -0,0 +1,398 @@
+@@ -0,0 +1,547 @@
 +#define native_handle_t __native_handle_t
 +#define buffer_handle_t __buffer_handle_t
 +#include "wrapper_private.h"
@@ -1316,6 +1316,27 @@ index 00000000000..46b663d011d
 +         if (import_dmabuf_fd < 0)
 +            goto fallback;
 +
++         VkMemoryFdPropertiesKHR memory_fd_props = {
++            .sType = VK_STRUCTURE_TYPE_MEMORY_FD_PROPERTIES_KHR,
++            .pNext = NULL,
++         };
++         result = device->dispatch_table.GetMemoryFdPropertiesKHR(
++            device->dispatch_handle, VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT,
++            import_dmabuf_fd, &memory_fd_props);
++         if (result != VK_SUCCESS) {
++            close(import_dmabuf_fd);
++            goto fallback;
++         }
++
++         uint32_t memory_type_index = wrapper_select_memory_type(
++            device->physical->memory_properties,
++            mem_flags | memory_fd_props.memoryTypeBits);
++         if (memory_type_index >= UINT32_MAX)
++         {
++            close(import_dmabuf_fd);
++            goto fallback;
++         }
++
 +         local_import_info = (VkImportMemoryFdInfoKHR) {
 +            .sType = VK_STRUCTURE_TYPE_IMPORT_MEMORY_FD_INFO_KHR,
 +            .pNext = wrapper_allocate_info.pNext,
@@ -1324,6 +1345,7 @@ index 00000000000..46b663d011d
 +               VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT,
 +         };
 +         wrapper_allocate_info.pNext = &local_import_info;
++         wrapper_allocate_info.memoryTypeIndex = memory_type_index;
 +         memory->dmabuf_fd = os_dupfd_cloexec(import_dmabuf_fd);
 +      } else {
 +      fallback:
@@ -1532,8 +1554,8 @@ index 00000000000..46b663d011d
 +}
 +
 +bool wrapper_try_import_dmabuf(struct wrapper_device *device) {
-+   VkMemoryFdPropertiesKHR fd_props;
-+   VkMemoryAllocateInfo alloc_info;
++   VkMemoryFdPropertiesKHR memory_fd_props;
++   VkMemoryAllocateInfo memory_alloc_info;
 +   VkDeviceMemory memory;
 +   VkResult result;
 +   int fd;
@@ -1545,28 +1567,29 @@ index 00000000000..46b663d011d
 +   if (fd < 0)
 +      return false;
 +
-+   fd_props = (VkMemoryFdPropertiesKHR) {
++   memory_fd_props = (VkMemoryFdPropertiesKHR) {
 +      .sType = VK_STRUCTURE_TYPE_MEMORY_FD_PROPERTIES_KHR,
 +   };
 +   result = device->dispatch_table.GetMemoryFdPropertiesKHR(
 +      device->dispatch_handle,
 +      VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT,
-+      fd, &fd_props);
++      fd, &memory_fd_props);
 +   if (result != VK_SUCCESS) {
 +      close(fd);
 +      return false;
 +   }
 +
-+   alloc_info = (VkMemoryAllocateInfo) {
++   memory_alloc_info = (VkMemoryAllocateInfo) {
 +      .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
 +      .allocationSize = 0x1000,
 +      .memoryTypeIndex = wrapper_select_memory_type(
 +         device->physical->memory_properties,
 +         VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT |
-+         fd_props.memoryTypeBits),
++         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
++         memory_fd_props.memoryTypeBits),
 +   };
 +   result = device->dispatch_table.AllocateMemory(
-+      device->dispatch_handle, &alloc_info, NULL, &memory);
++      device->dispatch_handle, &memory_alloc_info, NULL, &memory);
 +   if (result != VK_SUCCESS) {
 +      close(fd);
 +      return false;
@@ -1575,6 +1598,132 @@ index 00000000000..46b663d011d
 +   device->dispatch_table.FreeMemory(device->dispatch_handle,
 +                                     memory, NULL);
 +   return true;
++}
++
++static inline void
++sync_cacheline_to_gpu(void const *p __attribute__((unused)))
++{
++#if DETECT_ARCH_AARCH64
++   /* Clean data cache. */
++   __asm volatile("dc cvac, %0" : : "r" (p) : "memory");
++#elif (DETECT_ARCH_X86 || DETECT_ARCH_X86_64)
++   __builtin_ia32_clflush(p);
++#elif DETECT_ARCH_ARM
++   /* DCCMVAC - same as DC CVAC on aarch64.
++    * Seems to be illegal to call from userspace.
++    */
++   //__asm volatile("mcr p15, 0, %0, c7, c10, 1" : : "r" (p) : "memory");
++   unreachable("Cache line clean is unsupported on ARMv7");
++#endif
++}
++
++static inline void
++sync_cacheline_from_gpu(void const *p __attribute__((unused)))
++{
++#if DETECT_ARCH_AARCH64
++   /* Clean and Invalidate data cache, there is no separate Invalidate. */
++   __asm volatile("dc civac, %0" : : "r" (p) : "memory");
++#elif (DETECT_ARCH_X86 || DETECT_ARCH_X86_64)
++   __builtin_ia32_clflush(p);
++#elif DETECT_ARCH_ARM
++   /* DCCIMVAC - same as DC CIVAC on aarch64.
++    * Seems to be illegal to call from userspace.
++    */
++   //__asm volatile("mcr p15, 0, %0, c7, c14, 1" : : "r" (p) : "memory");
++   unreachable("Cache line invalidate is unsupported on ARMv7");
++#endif
++}
++
++static uint32_t
++get_l1_dcache_size()
++{
++if (!(DETECT_ARCH_AARCH64 || DETECT_ARCH_X86 || DETECT_ARCH_X86_64))
++   return 0;
++
++#if DETECT_ARCH_AARCH64 &&                                                   \
++   (!defined(_SC_LEVEL1_DCACHE_LINESIZE) || DETECT_OS_ANDROID)
++   /* Bionic does not implement _SC_LEVEL1_DCACHE_LINESIZE properly: */
++   uint64_t ctr_el0;
++   asm("mrs\t%x0, ctr_el0" : "=r"(ctr_el0));
++   return 4 << ((ctr_el0 >> 16) & 0xf);
++#elif defined(_SC_LEVEL1_DCACHE_LINESIZE)
++   return sysconf(_SC_LEVEL1_DCACHE_LINESIZE);
++#else
++   return 0;
++#endif
++}
++
++static void
++wrapper_sync_cacheline(struct wrapper_device *device,
++                       VkDeviceMemory _memory,
++                       VkDeviceSize size,
++                       VkDeviceSize offset,
++                       VkBool32 dir)
++{
++   struct wrapper_device_memory *memory;
++   struct hash_entry *entry;
++
++   uintptr_t level1_dcache_size = get_l1_dcache_size();
++   if (!level1_dcache_size)
++      return;
++
++   entry = _mesa_hash_table_search(device->memorys,
++                                   (void *)_memory);
++   memory = entry ? entry->data : NULL;
++   if (!memory || !memory->map_address)
++      return;
++
++   char *start = (char *) memory->map_address + offset;
++   char *end = start + (size == VK_WHOLE_SIZE ? (memory->alloc_size - offset) : size);
++
++   start = (char *) ((uintptr_t) start & ~(level1_dcache_size - 1));
++
++   for (; start < end; start += level1_dcache_size) {
++      if (dir)
++         sync_cacheline_to_gpu(start);
++      else
++         sync_cacheline_from_gpu(start);
++   }
++}
++
++VkResult
++wrapper_FlushMappedMemoryRanges(VkDevice _device,
++                           uint32_t memoryRangeCount,
++                           const VkMappedMemoryRange *pMemoryRanges)
++{
++   VK_FROM_HANDLE(wrapper_device, device, _device);
++
++   device->dispatch_table.FlushMappedMemoryRanges(
++      device->dispatch_handle, memoryRangeCount, pMemoryRanges);
++
++   for(int i = 0; i < memoryRangeCount; i++) {
++      wrapper_sync_cacheline(device,
++                             pMemoryRanges[i].memory,
++                             pMemoryRanges[i].size,
++                             pMemoryRanges[i].offset,
++                             VK_TRUE);
++   }
++   return VK_SUCCESS;
++}
++
++VkResult
++wrapper_InvalidateMappedMemoryRanges(VkDevice _device,
++                                uint32_t memoryRangeCount,
++                                const VkMappedMemoryRange *pMemoryRanges)
++{
++   VK_FROM_HANDLE(wrapper_device, device, _device);
++
++   device->dispatch_table.FlushMappedMemoryRanges(
++      device->dispatch_handle, memoryRangeCount, pMemoryRanges);
++
++   for(int i = 0; i < memoryRangeCount; i++) {
++      wrapper_sync_cacheline(device,
++                             pMemoryRanges[i].memory,
++                             pMemoryRanges[i].size,
++                             pMemoryRanges[i].offset,
++                             VK_FALSE);
++   }
++   return VK_SUCCESS;
 +}
 +
 diff --git a/src/vulkan/wrapper/wrapper_instance.c b/src/vulkan/wrapper/wrapper_instance.c
@@ -1882,7 +2031,7 @@ index 00000000000..3b083ec40d8
 +}
 diff --git a/src/vulkan/wrapper/wrapper_physical_device.c b/src/vulkan/wrapper/wrapper_physical_device.c
 new file mode 100644
-index 00000000000..196dfea81b7
+index 00000000000..d3acf24a69d
 --- /dev/null
 +++ b/src/vulkan/wrapper/wrapper_physical_device.c
 @@ -0,0 +1,215 @@
@@ -2099,7 +2248,7 @@ index 00000000000..196dfea81b7
 +         break;
 +      }
 +   }
-+   return idx < props.memoryTypeCount ? idx : 0;
++   return idx < props.memoryTypeCount ? idx : UINT32_MAX;
 +}
 diff --git a/src/vulkan/wrapper/wrapper_private.h b/src/vulkan/wrapper/wrapper_private.h
 new file mode 100644
@@ -2266,5 +2415,5 @@ index 014cb718b17..2316d3156d0 100644
     WSI_CB(QueueSubmit);
     WSI_CB(WaitForFences);
 -- 
-2.47.0
+2.47.1
 

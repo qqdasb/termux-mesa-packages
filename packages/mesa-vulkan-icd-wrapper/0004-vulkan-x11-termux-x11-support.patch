@@ -1,4 +1,4 @@
-From 71435ecce42a2438096d6c24b3730fd3686a99ee Mon Sep 17 00:00:00 2001
+From 48054cea43e3172cbb7166eff3a9ab14ede8dd05 Mon Sep 17 00:00:00 2001
 From: xMeM <haooy@outlook.com>
 Date: Thu, 14 Nov 2024 15:27:49 +0800
 Subject: [PATCH 2/2] vulkan/x11: termux-x11 support
@@ -667,5 +667,5 @@ index 0c0c489d893..5ed5d42341e 100644
        drm_image_params = (struct wsi_drm_image_params) {
           .base.image_type = WSI_IMAGE_TYPE_DRM,
 -- 
-2.47.0
+2.47.1
 
