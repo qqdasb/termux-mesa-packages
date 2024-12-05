@@ -3,15 +3,15 @@ TERMUX_PKG_DESCRIPTION="An open-source implementation of the OpenGL specificatio
 TERMUX_PKG_LICENSE="MIT"
 TERMUX_PKG_LICENSE_FILE="docs/license.rst"
 TERMUX_PKG_MAINTAINER="@termux"
-TERMUX_PKG_VERSION="24.2.8"
+TERMUX_PKG_VERSION="24.5.0-devel"
 _LLVM_MAJOR_VERSION=$(. $TERMUX_SCRIPTDIR/packages/libllvm/build.sh; echo $LLVM_MAJOR_VERSION)
 _LLVM_MAJOR_VERSION_NEXT=$((_LLVM_MAJOR_VERSION + 1))
-TERMUX_PKG_SRCURL=https://archive.mesa3d.org/mesa-${TERMUX_PKG_VERSION}.tar.xz
-TERMUX_PKG_SHA256=999d0a854f43864fc098266aaf25600ce7961318a1e2e358bff94a7f53580e30
+TERMUX_PKG_SRCURL=git+https://gitlab.freedesktop.org/mesa/mesa.git
+TERMUX_PKG_GIT_BRANCH="main"
 TERMUX_PKG_AUTO_UPDATE=true
 TERMUX_PKG_DEPENDS="libandroid-shmem, libc++, libdrm, libglvnd, libllvm (<< ${_LLVM_MAJOR_VERSION_NEXT}), libwayland, libx11, libxext, libxfixes, libxshmfence, libxxf86vm, ncurses, vulkan-loader, zlib, zstd"
 TERMUX_PKG_SUGGESTS="mesa-dev"
-TERMUX_PKG_BUILD_DEPENDS="libwayland-protocols, libxrandr, llvm, llvm-tools, mlir, xorgproto"
+TERMUX_PKG_BUILD_DEPENDS="libwayland-protocols (<= 1.38), libxrandr, llvm, llvm-tools, mlir, xorgproto"
 TERMUX_PKG_CONFLICTS="libmesa, ndk-sysroot (<= 25b)"
 TERMUX_PKG_REPLACES="libmesa"
 
@@ -25,15 +25,17 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -Degl-native-platform=x11
 -Dgles1=disabled
 -Dgles2=enabled
--Ddri3=enabled
 -Dglx=dri
 -Dllvm=enabled
 -Dshared-llvm=enabled
 -Dplatforms=x11,wayland
--Dgallium-drivers=swrast,virgl,zink
 -Dosmesa=true
 -Dglvnd=enabled
 -Dxmlconfig=disabled
+-Dshared-glapi=enabled
+-Dlibunwind=disabled
+-Dpower8=enabled
+-Dvideo-codecs=all
 "
 
 termux_step_post_get_source() {
@@ -59,11 +61,19 @@ termux_step_pre_configure() {
 	fi
 	export PATH="$_WRAPPER_BIN:$PATH"
 
-	if [ $TERMUX_ARCH = "arm" ] || [ $TERMUX_ARCH = "aarch64" ]; then
-		TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" -Dvulkan-drivers=swrast,freedreno"
+	if [ $TERMUX_ARCH = "arm" ]; then
+		TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" -Dgallium-drivers=swrast,virgl,zink,freedreno"
+		TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" -Dvulkan-drivers=freedreno"
 		TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" -Dfreedreno-kmds=msm,kgsl"
+		TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" -Dgallium-xa=enabled"
+	elif [ $TERMUX_ARCH = "aarch64" ]; then
+		TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" -Dgallium-drivers=swrast,virgl,zink,freedreno"
+		TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" -Dvulkan-drivers=freedreno,virtio"
+		TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" -Dfreedreno-kmds=msm,kgsl,virtio,wsl"
+		TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" -Dgallium-xa=enabled"
 	elif [ $TERMUX_ARCH = "i686" ] || [ $TERMUX_ARCH = "x86_64" ]; then
-		TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" -Dvulkan-drivers=swrast"
+		TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" -Dgallium-drivers=swrast,virgl,zink"
+		TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" -Dvulkan-driver="
 	else
 		termux_error_exit "Invalid arch: $TERMUX_ARCH"
 	fi
