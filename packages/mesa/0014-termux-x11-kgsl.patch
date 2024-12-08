@@ -328,3 +328,20 @@ index 75eb560595f..138172dfd9a 100644
     xcb_prefetch_extension_data(conn, &xcb_dri3_id);
     extension = xcb_get_extension_data(conn, &xcb_dri3_id);
     if (!(extension && extension->present))
+diff --git a/src/loader/loader.c b/src/loader/loader.c
+index e9eb4d8b796..92166061782 100644
+--- a/src/loader/loader.c
++++ b/src/loader/loader.c
+@@ -647,6 +647,12 @@ loader_get_linux_pci_id_for_fd(int fd, int *vendor_id, int *chip_id)
+ bool
+ loader_get_pci_id_for_fd(int fd, int *vendor_id, int *chip_id)
+ {
++#ifdef __TERMUX__
++   const char *env = getenv("MESA_LOADER_DRIVER_OVERRIDE");
++   if (env && strcmp(env, "kgsl") == 0) {
++      return false;
++   }
++#endif
+ #ifdef __linux__
+    /* Implementation without causing full enumeration of DRM devices. */
+    if (loader_get_linux_pci_id_for_fd(fd, vendor_id, chip_id))
