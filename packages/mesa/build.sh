@@ -71,7 +71,7 @@ termux_step_pre_configure() {
 		TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" -Dgallium-xa=enabled"
 	elif [ $TERMUX_ARCH = "i686" ] || [ $TERMUX_ARCH = "x86_64" ]; then
 		TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" -Dgallium-drivers=swrast,virgl,zink"
-		TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" -Dvulkan-driver="
+		TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" -Dvulkan-drivers="
 	else
 		termux_error_exit "Invalid arch: $TERMUX_ARCH"
 	fi
