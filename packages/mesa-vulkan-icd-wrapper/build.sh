@@ -3,10 +3,10 @@ TERMUX_PKG_DESCRIPTION="Android Vulkan wrapper"
 TERMUX_PKG_LICENSE="MIT"
 TERMUX_PKG_LICENSE_FILE="docs/license.rst"
 TERMUX_PKG_MAINTAINER="xMeM <haooy@outlook.com>"
-TERMUX_PKG_VERSION="24.2.7"
-TERMUX_PKG_REVISION=12
+TERMUX_PKG_VERSION="24.3.1"
+TERMUX_PKG_REVISION=1
 TERMUX_PKG_SRCURL=https://archive.mesa3d.org/mesa-${TERMUX_PKG_VERSION}.tar.xz
-TERMUX_PKG_SHA256=a0ce37228679647268a83b3652d859dcf23d6f6430d751489d4464f6de6459fd
+TERMUX_PKG_SHA256=9c795900449ce5bc7c526ba0ab3532a22c3c951cab7e0dd9de5fcac41b0843af
 TERMUX_PKG_DEPENDS="libandroid-shmem, libc++, libdrm, libx11, libxcb, libxshmfence, libwayland, vulkan-loader-generic, zlib, zstd"
 TERMUX_PKG_BUILD_DEPENDS="libwayland-protocols, libxrandr, xorgproto"
 TERMUX_PKG_API_LEVEL=26
@@ -27,6 +27,7 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 TERMUX_PKG_BLACKLISTED_ARCHES="i686, x86_64"
 
 termux_step_post_get_source() {
+	cp -r $TERMUX_PKG_BUILDER_DIR/src/* $TERMUX_PKG_SRCDIR/src/
 	# Do not use meson wrap projects
 	rm -rf subprojects
 }
