@@ -24,8 +24,6 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -Dvulkan-drivers=wrapper
 "
 
-TERMUX_PKG_BLACKLISTED_ARCHES="i686, x86_64"
-
 termux_step_post_get_source() {
 	cp -r $TERMUX_PKG_BUILDER_DIR/src/* $TERMUX_PKG_SRCDIR/src/
 	# Do not use meson wrap projects
