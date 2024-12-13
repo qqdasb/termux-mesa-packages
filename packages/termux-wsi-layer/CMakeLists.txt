@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.29)
 project(termux-wsi-layer C)
 
-set(CMAKE_BUILD_TYPE Release)
+set(CMAKE_BUILD_TYPE Minsize)
 set(CMAKE_C_STANDARD 11)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(X11 REQUIRED x11 x11-xcb xcb xcb-randr xcb-dri3 xcb-present)
