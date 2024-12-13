@@ -14,7 +14,7 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 termux_step_pre_configure() {
 	# benchmark result as follows:
 	# -O2 -flto > -O3 -flto > -O2 > -Os > -Os -flto > -O3 > -Oz > -Oz -flto
-	export CFLAGS="${CFLAGS/-Oz/-O2} -flto"
+	export CFLAGS="${CFLAGS/-Oz/-O2} -flto -Wno-int-conversion"
 }
 
 termux_step_post_make_install() {
