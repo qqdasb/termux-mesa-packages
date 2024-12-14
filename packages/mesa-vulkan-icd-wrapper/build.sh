@@ -22,6 +22,7 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -Dgallium-drivers=
 -Dxmlconfig=disabled
 -Dvulkan-drivers=wrapper
+-Dvulkan-beta=true
 "
 
 termux_step_post_get_source() {
