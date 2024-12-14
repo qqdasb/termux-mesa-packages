@@ -54,6 +54,8 @@ termux_step_pre_configure() {
 	CPPFLAGS+=" -D__USE_GNU"
 	LDFLAGS+=" -landroid-shmem"
 
+	echo "rust = /data/data/com.termux/files/usr/bin/rustc" >> $TERMUX_MESON_CROSSFILE
+
 	_WRAPPER_BIN=$TERMUX_PKG_BUILDDIR/_wrapper/bin
 	mkdir -p $_WRAPPER_BIN
 	if [ "$TERMUX_ON_DEVICE_BUILD" = "false" ]; then
