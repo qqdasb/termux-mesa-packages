@@ -12,7 +12,7 @@ TERMUX_PKG_GIT_BRANCH="main"
 TERMUX_PKG_AUTO_UPDATE=true
 TERMUX_PKG_DEPENDS="libandroid-shmem, libc++, libdrm, libglvnd, libllvm (<< ${_LLVM_MAJOR_VERSION_NEXT}), libwayland, libx11, libxext, libxfixes, libxshmfence, libxxf86vm, ncurses, vulkan-loader, zlib, zstd"
 TERMUX_PKG_SUGGESTS="mesa-dev"
-TERMUX_PKG_BUILD_DEPENDS="libwayland-protocols (<= 1.38), libxrandr, llvm, llvm-tools, mlir, xorgproto, rustc-dev, rust-bindgen"
+TERMUX_PKG_BUILD_DEPENDS="libwayland-protocols (<= 1.38), libxrandr, llvm, llvm-tools, mlir, xorgproto"
 TERMUX_PKG_CONFLICTS="libmesa, ndk-sysroot (<= 25b)"
 TERMUX_PKG_REPLACES="libmesa"
 
@@ -48,9 +48,7 @@ termux_step_post_get_source() {
 
 termux_step_pre_configure() {
 	termux_setup_cmake
-	termux_setup_rust
 
-	RUSTFLAGS+=" --target $CARGO_TARGET_NAME"
 	CPPFLAGS+=" -D__USE_GNU"
 	LDFLAGS+=" -landroid-shmem"
 
@@ -70,12 +68,12 @@ termux_step_pre_configure() {
 		TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" -Dgallium-drivers=swrast,virgl,zink,freedreno"
 		TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" -Dvulkan-drivers=freedreno"
 		TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" -Dfreedreno-kmds=msm,kgsl"
-		TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" -Dgallium-xa=enabled -Dgallium-rusticl=true"
+		TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" -Dgallium-xa=enabled"
 	elif [ $TERMUX_ARCH = "aarch64" ]; then
 		TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" -Dgallium-drivers=swrast,virgl,zink,freedreno"
 		TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" -Dvulkan-drivers=freedreno,virtio"
 		TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" -Dfreedreno-kmds=msm,kgsl,virtio,wsl"
-		TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" -Dgallium-xa=enabled -Dgallium-rusticl=true"
+		TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" -Dgallium-xa=enabled"
 	elif [ $TERMUX_ARCH = "i686" ] || [ $TERMUX_ARCH = "x86_64" ]; then
 		TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" -Dgallium-drivers=swrast,virgl,zink"
 		TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" -Dvulkan-drivers="

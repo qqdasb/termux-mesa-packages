@@ -55,7 +55,6 @@ termux_setup_meson() {
 	echo "ld = '$LD'" >> $TERMUX_MESON_CROSSFILE
 	echo "pkg-config = '$PKG_CONFIG'" >> $TERMUX_MESON_CROSSFILE
 	echo "strip = '$STRIP'" >> $TERMUX_MESON_CROSSFILE
-	echo "rust = /data/data/com.termux/files/usr/bin/rustc" >> $TERMUX_MESON_CROSSFILE
 
 	if [ "$TERMUX_PACKAGE_LIBRARY" = "bionic" ]; then
 		echo '' >> $TERMUX_MESON_CROSSFILE
