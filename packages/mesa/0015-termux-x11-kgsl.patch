@@ -309,6 +309,14 @@ diff --git a/src/x11/loader_x11.c b/src/x11/loader_x11.c
 index 75eb560595f..138172dfd9a 100644
 --- a/src/x11/loader_x11.c
 +++ b/src/x11/loader_x11.c
+@@ -21,6 +21,7 @@
+  * OF THIS SOFTWARE.
+  */
+
++#include <string.h>
+ #include <stdbool.h>
+ #include <stdlib.h>
+ #include <fcntl.h>
 @@ -46,6 +46,10 @@ x11_dri3_open(xcb_connection_t *conn,
     int                          fd;
     const xcb_query_extension_reply_t *extension;
