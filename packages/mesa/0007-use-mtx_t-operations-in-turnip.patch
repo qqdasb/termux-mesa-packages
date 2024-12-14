@@ -38,15 +38,15 @@
  
     if (result != VK_SUCCESS) {
        vk_free(&dev->vk.alloc, shader);
-@@ -2528,9 +2528,9 @@
- {
+@@ -3049,9 +3049,9 @@
     tu_cs_finish(&shader->cs);
- 
+    TU_RMV(resource_destroy, dev, &shader->bo);
+
 -   pthread_mutex_lock(&dev->pipeline_mutex);
 +   mtx_lock(&dev->pipeline_mutex);
     tu_suballoc_bo_free(&dev->pipeline_suballoc, &shader->bo);
 -   pthread_mutex_unlock(&dev->pipeline_mutex);
 +   mtx_unlock(&dev->pipeline_mutex);
- 
+
     if (shader->pvtmem_bo)
        tu_bo_finish(dev, shader->pvtmem_bo);
