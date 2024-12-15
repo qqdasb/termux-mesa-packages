@@ -8,6 +8,7 @@ TERMUX_PKG_GIT_BRANCH="main"
 TERMUX_PKG_DEPENDS="libdrm, libepoxy, libglvnd, libx11, mesa, vulkan-loader"
 TERMUX_PKG_BUILD_DEPENDS="xorgproto"
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="-Dplatforms=egl,glx -Dvenus=true"
+TERMUX_PKG_BLACKLISTED_ARCHES="arm"
 
 termux_step_pre_configure() {
 	# error: using an array subscript expression within 'offsetof' is a Clang extension [-Werror,-Wgnu-offsetof-extensions]
