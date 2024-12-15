@@ -6,6 +6,7 @@ TERMUX_PKG_VERSION=2.23.0.1-dev
 TERMUX_PKG_SRCURL=git+https://github.com/intel/libva.git
 TERMUX_PKG_GIT_BRANCH="master"
 TERMUX_PKG_DEPENDS="libdrm, libglvnd, libx11, libxext, libxfixes, libwayland"
+TERMUX_PKG_BUILD_DEPENDS="libwayland, libwayland-cross-scanner"
 
 termux_step_configure() {
 	CFLAGS+=" -DENABLE_VA_MESSAGING"
