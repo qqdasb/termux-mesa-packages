@@ -4,9 +4,10 @@ TERMUX_PKG_LICENSE="MIT"
 TERMUX_PKG_LICENSE_FILE="docs/license.rst"
 TERMUX_PKG_MAINTAINER="xMeM <haooy@outlook.com>"
 TERMUX_PKG_VERSION="24.3.1"
-TERMUX_PKG_REVISION=1
-TERMUX_PKG_SRCURL=https://archive.mesa3d.org/mesa-${TERMUX_PKG_VERSION}.tar.xz
-TERMUX_PKG_SHA256=9c795900449ce5bc7c526ba0ab3532a22c3c951cab7e0dd9de5fcac41b0843af
+TERMUX_PKG_REVISION=2
+TERMUX_PKG_SRCURL=git+https://github.com/xMeM/mesa
+TERMUX_PKG_GIT_BRANCH=wrapper
+_COMMIT=567b4b430d9c612c3c1167bd2790532d7eed57e9
 TERMUX_PKG_DEPENDS="libandroid-shmem, libc++, libdrm, libx11, libxcb, libxshmfence, libwayland, vulkan-loader-generic, zlib, zstd"
 TERMUX_PKG_BUILD_DEPENDS="libwayland-protocols, libxrandr, xorgproto"
 TERMUX_PKG_API_LEVEL=26
@@ -25,7 +26,8 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 "
 
 termux_step_post_get_source() {
-	cp -r $TERMUX_PKG_BUILDER_DIR/src/* $TERMUX_PKG_SRCDIR/src/
+	git fetch --unshallow
+	git checkout $_COMMIT
 	# Do not use meson wrap projects
 	rm -rf subprojects
 }
