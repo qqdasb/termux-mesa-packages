@@ -101,7 +101,7 @@ termux_setup_toolchain_27c() {
 	fi
 	local env_host="${CARGO_TARGET_NAME//-/_}"
 	export CARGO_TARGET_${env_host@U}_LINKER="${CC}"
-	export CARGO_TARGET_${env_host@U}_RUSTFLAGS="-L${TERMUX_PREFIX}/lib -C link-arg=-Wl,-rpath=${TERMUX_PREFIX}/lib -C link-arg=-Wl,--enable-new-dtags  --target $CARGO_TARGET_NAME"
+	export CARGO_TARGET_${env_host@U}_RUSTFLAGS="-L${TERMUX_PREFIX}/lib -C link-arg=-Wl,-rpath=${TERMUX_PREFIX}/lib -C link-arg=-Wl,--enable-new-dtags"
 	export CFLAGS_${env_host}="${CPPFLAGS} ${CFLAGS}"
 
 	export ac_cv_func_getpwent=no
