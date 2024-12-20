@@ -1,0 +1,11 @@
+--- a/src/meson.build
++++ b/src/meson.build
+@@ -115,7 +115,7 @@
+ endif
+ 
+ if need_wayland
+-    wayland_scanner = find_program(wayland_scanner_dep.get_pkgconfig_variable('wayland_scanner'))
++    wayland_scanner = find_program('@TERMUX_PREFIX@/opt/libwayland/cross/bin/wayland-scanner')
+     wayland_protocols_dir = wayland_protocols_dep.get_pkgconfig_variable('pkgdatadir')
+ 
+     xdg_shell_xml_path = wayland_protocols_dir + '/stable/xdg-shell/xdg-shell.xml'
