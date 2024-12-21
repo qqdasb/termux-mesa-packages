@@ -10,7 +10,7 @@ TERMUX_PKG_NO_STRIP=true
 TERMUX_PKG_SRCDIR="$TERMUX_PREFIX/opt/termux-wsi-layer/src"
 
 termux_step_pre_configure() {
-	mkdir -p "$TERMUX_PREFIX/opt/termux-wsi-layer/src"
-	cp -r "${TERMUX_PKG_BUILDER_DIR}/"{include,*.c,*.h,*.json,CMakeLists.txt} "$TERMUX_PREFIX/opt/termux-wsi-layer/src"
 	export CFLAGS="${CFLAGS/-Oz/-O2} -flto"
+	mkdir -p "$TERMUX_PREFIX/opt/termux-wsi-layer/src"
+	cp -r "${TERMUX_PKG_BUILDER_DIR}/"{*.c,*.h,*.json,CMakeLists.txt} "$TERMUX_PREFIX/opt/termux-wsi-layer/src"
 }
