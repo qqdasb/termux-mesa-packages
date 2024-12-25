@@ -10,7 +10,6 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -DTERMUX=ON
 -DCMAKE_SYSTEM_NAME=Linux
 -DGLX_STUBS=ON
--DEGL_WRAPPER=ON
 "
 
 termux_step_pre_configure() {
@@ -21,7 +20,5 @@ termux_step_pre_configure() {
 
 termux_step_post_make_install() {
 	rm -fr "${TERMUX_PREFIX}/lib/gl4es/libGL.so"
-	rm -fr "${TERMUX_PREFIX}/lib/gl4es/libEGL.so"
 	ln -fs "libGL.so.1" "${TERMUX_PREFIX}/lib/gl4es/libGL.so"
-	ln -fs "libEGL.so.1" "${TERMUX_PREFIX}/lib/gl4es/libEGL.so"
 }
