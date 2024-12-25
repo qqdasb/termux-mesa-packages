@@ -1,13 +1,13 @@
 --- a/src/CMakeLists.txt
 +++ b/src/CMakeLists.txt
-@@ -227,6 +227,19 @@
+@@ -225,10 +225,13 @@
      endif()
      install(TARGETS GL
        LIBRARY
 -      DESTINATION "/usr/lib/gl4es/"
 +      DESTINATION "@TERMUX_PREFIX@/lib/gl4es/"
 +    )
-+    install(FILES "../libEGL.so.1"
++    install(FILES "../lib/libEGL.so.1"
 +      DESTINATION "@TERMUX_PREFIX@/lib/gl4es/"
      )
      install(FILES "../include/gl4esinit.h" "../include/gl4eshint.h"
