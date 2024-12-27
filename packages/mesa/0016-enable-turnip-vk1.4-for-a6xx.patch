@@ -1,0 +1,31 @@
+--- a/src/freedreno/vulkan/tu_device.cc
++++ b/src/freedreno/vulkan/tu_device.cc	2024-12-27 21:05:21.255999098 +0800
+@@ -467,8 +467,8 @@
+    features->pushDescriptor = true;
+ 
+    /* VK_KHR_compute_shader_derivatives */
+-   features->computeDerivativeGroupQuads = pdevice->info->chip >= 7;
+-   features->computeDerivativeGroupLinear = pdevice->info->chip >= 7;
++   features->computeDerivativeGroupQuads = pdevice->info->chip >= 6;
++   features->computeDerivativeGroupLinear = pdevice->info->chip >= 6;
+ 
+    /* VK_KHR_dynamic_rendering_local_read */
+    features->dynamicRenderingLocalRead = true;
+@@ -771,7 +771,7 @@
+    memset(p->driverInfo, 0, sizeof(p->driverInfo));
+    snprintf(p->driverInfo, VK_MAX_DRIVER_INFO_SIZE,
+             "Mesa " PACKAGE_VERSION MESA_GIT_SHA1);
+-   if (pdevice->info->chip >= 7) {
++   if (pdevice->info->chip >= 6) {
+       p->conformanceVersion = (VkConformanceVersion) {
+          .major = 1,
+          .minor = 4,
+@@ -1044,7 +1044,7 @@
+ 
+    props->apiVersion =
+       (pdevice->info->a6xx.has_hw_multiview || TU_DEBUG(NOCONFORM)) ?
+-         ((pdevice->info->chip >= 7) ? TU_API_VERSION :
++         ((pdevice->info->chip >= 6) ? TU_API_VERSION :
+             VK_MAKE_VERSION(1, 3, VK_HEADER_VERSION))
+          : VK_MAKE_VERSION(1, 0, VK_HEADER_VERSION);
+    props->driverVersion = vk_get_driver_version();
