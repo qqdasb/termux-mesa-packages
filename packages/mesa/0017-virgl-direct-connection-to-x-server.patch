@@ -1,0 +1,265 @@
+diff --git a/src/egl/drivers/dri2/platform_x11.c b/src/egl/drivers/dri2/platform_x11.c
+index 4895e6d..365c7c8 100644
+--- a/src/egl/drivers/dri2/platform_x11.c
++++ b/src/egl/drivers/dri2/platform_x11.c
+@@ -364,6 +364,12 @@ swrastGetImageShm(struct dri_drawable * read,
+    xcb_shm_detach(dri2_dpy->conn, shm_seg);
+ }
+ 
++static uint32_t
++swrastGetDrawable(void *loaderPrivate)
++{
++   return (uintptr_t) ((struct dri2_egl_surface*) loaderPrivate)->base.NativeSurface;
++}
++
+ static xcb_screen_t *
+ get_xcb_screen(xcb_screen_iterator_t iter, int screen)
+ {
+@@ -1603,6 +1609,7 @@ static const __DRIswrastLoaderExtension swrast_loader_extension = {
+    .putImage = swrastPutImage,
+    .putImage2 = swrastPutImage2,
+    .getImage = swrastGetImage,
++   .getDrawable = swrastGetDrawable,
+ };
+ 
+ static const __DRIswrastLoaderExtension swrast_loader_shm_extension = {
+@@ -1615,6 +1622,7 @@ static const __DRIswrastLoaderExtension swrast_loader_shm_extension = {
+    .getImage = swrastGetImage,
+    .getImage2 = swrastGetImage2,
+    .getImageShm = swrastGetImageShm,
++   .getDrawable = swrastGetDrawable,
+ };
+ 
+ static_assert(sizeof(struct kopper_vk_surface_create_storage) >=
+diff --git a/src/gallium/frontends/dri/drisw.c b/src/gallium/frontends/dri/drisw.c
+index 4590b57..44121eb 100644
+--- a/src/gallium/frontends/dri/drisw.c
++++ b/src/gallium/frontends/dri/drisw.c
+@@ -187,6 +187,13 @@ drisw_put_image_shm(struct dri_drawable *drawable,
+    put_image_shm(drawable, shmid, shmaddr, offset, offset_x, x, y, width, height, stride);
+ }
+ 
++static inline uint32_t
++drisw_get_drawable(struct dri_drawable *drawable)
++{
++   const __DRIswrastLoaderExtension *loader = drawable->screen->swrast_loader;
++   return loader->getDrawable(drawable->loaderPrivate);
++}
++
+ static inline void
+ drisw_present_texture(struct pipe_context *pipe, struct dri_drawable *drawable,
+                       struct pipe_resource *ptex, unsigned nrects, struct pipe_box *sub_box)
+@@ -588,12 +595,14 @@ drisw_update_tex_buffer(struct dri_drawable *drawable,
+  */
+ 
+ static const struct drisw_loader_funcs drisw_lf = {
++   .get_drawable = drisw_get_drawable,
+    .get_image = drisw_get_image,
+    .put_image = drisw_put_image,
+    .put_image2 = drisw_put_image2
+ };
+ 
+ static const struct drisw_loader_funcs drisw_shm_lf = {
++   .get_drawable = drisw_get_drawable,
+    .get_image = drisw_get_image,
+    .put_image = drisw_put_image,
+    .put_image2 = drisw_put_image2,
+diff --git a/src/gallium/include/frontend/drisw_api.h b/src/gallium/include/frontend/drisw_api.h
+index 037f4b6..08fff73 100644
+--- a/src/gallium/include/frontend/drisw_api.h
++++ b/src/gallium/include/frontend/drisw_api.h
+@@ -22,6 +22,7 @@ struct drisw_loader_funcs
+    void (*put_image_shm) (struct dri_drawable *dri_drawable,
+                           int shmid, char *shmaddr, unsigned offset, unsigned offset_x,
+                           int x, int y, unsigned width, unsigned height, unsigned stride);
++   uint32_t (*get_drawable) (struct dri_drawable *dri_drawable);
+ };
+ 
+ #endif
+diff --git a/src/gallium/include/frontend/sw_winsys.h b/src/gallium/include/frontend/sw_winsys.h
+index ebb9991..7eb550b 100644
+--- a/src/gallium/include/frontend/sw_winsys.h
++++ b/src/gallium/include/frontend/sw_winsys.h
+@@ -146,6 +146,8 @@ struct sw_winsys
+                                    unsigned width, unsigned height,
+                                    unsigned stride,
+                                    void *data );
++
++   uint32_t (*displaytarget_get_drawable)( struct sw_winsys *ws, void *context_private);
+ };
+ 
+ 
+diff --git a/src/gallium/include/mesa_interface.h b/src/gallium/include/mesa_interface.h
+index 7e7432d..4e824b0 100644
+--- a/src/gallium/include/mesa_interface.h
++++ b/src/gallium/include/mesa_interface.h
+@@ -339,6 +339,8 @@ typedef struct {
+                         int x, int y, int width, int height,
+                         int shmid, void *loaderPrivate);
+ 
++    uint32_t (*getDrawable)(void *loaderPrivate);
++
+    /**
+      * Put shm image to drawable (v2)
+      *
+diff --git a/src/gallium/winsys/sw/dri/dri_sw_winsys.c b/src/gallium/winsys/sw/dri/dri_sw_winsys.c
+index 59fd529..5f8cc1e 100644
+--- a/src/gallium/winsys/sw/dri/dri_sw_winsys.c
++++ b/src/gallium/winsys/sw/dri/dri_sw_winsys.c
+@@ -380,6 +380,13 @@ dri_destroy_sw_winsys(struct sw_winsys *winsys)
+    FREE(winsys);
+ }
+ 
++static uint32_t
++dri_sw_displaytarget_get_drawable(struct sw_winsys *ws, void *priv)
++{
++   struct dri_sw_winsys *dri_sw_ws = dri_sw_winsys(ws);
++   return dri_sw_ws->lf->get_drawable((struct dri_drawable*) priv);
++}
++
+ struct sw_winsys *
+ dri_create_sw_winsys(const struct drisw_loader_funcs *lf)
+ {
+@@ -406,6 +413,7 @@ dri_create_sw_winsys(const struct drisw_loader_funcs *lf)
+    ws->base.displaytarget_unmap = dri_sw_displaytarget_unmap;
+ 
+    ws->base.displaytarget_display = dri_sw_displaytarget_display;
++   ws->base.displaytarget_get_drawable = dri_sw_displaytarget_get_drawable;
+ 
+    return &ws->base;
+ }
+diff --git a/src/gallium/winsys/virgl/vtest/virgl_vtest_socket.c b/src/gallium/winsys/virgl/vtest/virgl_vtest_socket.c
+index 4a0dfd2..37a735b 100644
+--- a/src/gallium/winsys/virgl/vtest/virgl_vtest_socket.c
++++ b/src/gallium/winsys/virgl/vtest/virgl_vtest_socket.c
+@@ -561,6 +561,20 @@ int virgl_vtest_busy_wait(struct virgl_vtest_winsys *vws, int handle,
+    return result[0];
+ }
+ 
++int virgl_vtest_send_draw_to_x_server_drawable(struct virgl_vtest_winsys *vws, uint32_t res_id, uint32_t handle)
++{
++   uint32_t vtest_hdr[VTEST_HDR_SIZE];
++   uint32_t cmd[2];
++   vtest_hdr[VTEST_CMD_LEN] = 2;
++   vtest_hdr[VTEST_CMD_ID] = VCMD_DRAW_TO_X_SERVER_DRAWABLE;
++
++   cmd[0] = res_id;
++   cmd[1] = handle;
++   virgl_block_write(vws->sock_fd, &vtest_hdr, sizeof(vtest_hdr));
++   virgl_block_write(vws->sock_fd, &cmd, sizeof(cmd));
++   return 0;
++}
++
+ int
+ virgl_vtest_send_create_blob(struct virgl_vtest_winsys *vws,
+                                  uint32_t size, uint32_t blob_id,
+diff --git a/src/gallium/winsys/virgl/vtest/virgl_vtest_winsys.c b/src/gallium/winsys/virgl/vtest/virgl_vtest_winsys.c
+index 2b09608..c0d0de7 100644
+--- a/src/gallium/winsys/virgl/vtest/virgl_vtest_winsys.c
++++ b/src/gallium/winsys/virgl/vtest/virgl_vtest_winsys.c
+@@ -631,6 +631,8 @@ static int virgl_vtest_get_caps(struct virgl_winsys *vws,
+    // vtest doesn't support that
+    if (caps->caps.v2.capability_bits_v2 & VIRGL_CAP_V2_COPY_TRANSFER_BOTH_DIRECTIONS)
+       caps->caps.v2.capability_bits_v2 &= ~VIRGL_CAP_V2_COPY_TRANSFER_BOTH_DIRECTIONS;
++   if (caps->caps.v2.capability_bits_v2 & VIRGL_CAP_V2_DIRECT_CONNECTION_TO_X_SERVER)
++      vtws->direct_x_server_connection_supported = true;
+    return ret;
+ }
+ 
+@@ -685,6 +687,12 @@ static void virgl_vtest_flush_frontbuffer(struct virgl_winsys *vws,
+    if (!res->dt)
+       return;
+ 
++   if (vtws->direct_x_server_connection_supported) {
++      virgl_vtest_send_draw_to_x_server_drawable(vtws, res->res_handle, vtws->sws->displaytarget_get_drawable(vtws->sws, winsys_drawable_handle));
++      virgl_vtest_busy_wait(vtws, res->res_handle, VCMD_BUSY_WAIT_FLAG_WAIT);
++      return;
++   }
++
+    memset(&box, 0, sizeof(box));
+ 
+    if (sub_box) {
+diff --git a/src/gallium/winsys/virgl/vtest/virgl_vtest_winsys.h b/src/gallium/winsys/virgl/vtest/virgl_vtest_winsys.h
+index 8b3c37d..1259abd 100644
+--- a/src/gallium/winsys/virgl/vtest/virgl_vtest_winsys.h
++++ b/src/gallium/winsys/virgl/vtest/virgl_vtest_winsys.h
+@@ -51,6 +51,7 @@ struct virgl_vtest_winsys {
+ 
+    int32_t blob_id;
+    unsigned protocol_version;
++   unsigned direct_x_server_connection_supported;
+ };
+ 
+ struct virgl_hw_res {
+@@ -157,4 +158,6 @@ int virgl_vtest_busy_wait(struct virgl_vtest_winsys *vws, int handle,
+ int
+ virgl_vtest_send_create_blob(struct virgl_vtest_winsys *vws,
+                              uint32_t size, uint32_t blob_id, int *fd);
++
++int virgl_vtest_send_draw_to_x_server_drawable(struct virgl_vtest_winsys *vws, uint32_t res_id, uint32_t handle);
+ #endif
+diff --git a/src/glx/drisw_glx.c b/src/glx/drisw_glx.c
+index 26f7569..7721e11 100644
+--- a/src/glx/drisw_glx.c
++++ b/src/glx/drisw_glx.c
+@@ -350,6 +350,12 @@ swrastGetImageShm(struct dri_drawable * read,
+    swrastGetImageShm2(read, x, y, w, h, shmid, loaderPrivate);
+ }
+ 
++static uint32_t
++swrastGetDrawable(void *loaderPrivate)
++{
++   return ((struct drisw_drawable*) loaderPrivate)->base.xDrawable;
++}
++
+ static const __DRIswrastLoaderExtension swrastLoaderExtension_shm = {
+    .base = {__DRI_SWRAST_LOADER, 6 },
+ 
+@@ -362,6 +368,7 @@ static const __DRIswrastLoaderExtension swrastLoaderExtension_shm = {
+    .getImageShm         = swrastGetImageShm,
+    .putImageShm2        = swrastPutImageShm2,
+    .getImageShm2        = swrastGetImageShm2,
++   .getDrawable         = swrastGetDrawable,
+ };
+ 
+ static const __DRIswrastLoaderExtension swrastLoaderExtension = {
+@@ -372,6 +379,7 @@ static const __DRIswrastLoaderExtension swrastLoaderExtension = {
+    .getImage            = swrastGetImage,
+    .putImage2           = swrastPutImage2,
+    .getImage2           = swrastGetImage2,
++   .getDrawable         = swrastGetDrawable,
+ };
+ 
+ static_assert(sizeof(struct kopper_vk_surface_create_storage) >= sizeof(VkXcbSurfaceCreateInfoKHR), "");
+diff --git a/src/virtio/virtio-gpu/virgl_hw.h b/src/virtio/virtio-gpu/virgl_hw.h
+index e2b324b..06ac119 100644
+--- a/src/virtio/virtio-gpu/virgl_hw.h
++++ b/src/virtio/virtio-gpu/virgl_hw.h
+@@ -587,6 +587,7 @@ enum virgl_formats {
+ #define VIRGL_CAP_V2_GROUP_VOTE           (1 << 15)
+ #define VIRGL_CAP_V2_MIRROR_CLAMP_TO_EDGE (1 << 16)
+ #define VIRGL_CAP_V2_MIRROR_CLAMP         (1 << 17)
++#define VIRGL_CAP_V2_DIRECT_CONNECTION_TO_X_SERVER (1u << 31)
+ 
+ /* virgl bind flags - these are compatible with mesa 10.5 gallium.
+  * but are fixed, no other should be passed to virgl either.
+diff --git a/src/virtio/vtest/vtest_protocol.h b/src/virtio/vtest/vtest_protocol.h
+index c48be14..4c5df17 100644
+--- a/src/virtio/vtest/vtest_protocol.h
++++ b/src/virtio/vtest/vtest_protocol.h
+@@ -84,6 +84,8 @@
+ #define VCMD_SUBMIT_CMD2 24
+ #endif /* VIRGL_RENDERER_UNSTABLE_APIS */
+ 
++#define VCMD_DRAW_TO_X_SERVER_DRAWABLE 48
++
+ #define VCMD_RES_CREATE_SIZE 10
+ #define VCMD_RES_CREATE_RES_HANDLE 0 /* must be 0 since protocol version 3 */
+ #define VCMD_RES_CREATE_TARGET 1
+@@ -243,4 +245,6 @@ struct vcmd_submit_cmd2_batch {
+ 
+ #endif /* VIRGL_RENDERER_UNSTABLE_APIS */
+ 
++#define VCMD_DRAW_TO_X_SERVER_DRAWABLE_SIZE 2
++
+ #endif /* VTEST_PROTOCOL */
