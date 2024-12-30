@@ -1,11 +1,8 @@
-This reverts https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/11714,
-which implements resource_create_front for vtest.
-
-It breaks `glxinfo` with `virglrenderer-android`.
-
+diff --git a/src/gallium/winsys/virgl/vtest/virgl_vtest_winsys.c b/src/gallium/winsys/virgl/vtest/virgl_vtest_winsys.c
+index 2b09608..e207b4a 100644
 --- a/src/gallium/winsys/virgl/vtest/virgl_vtest_winsys.c
 +++ b/src/gallium/winsys/virgl/vtest/virgl_vtest_winsys.c
-@@ -304,7 +304,11 @@
+@@ -361,7 +361,11 @@ virgl_vtest_winsys_resource_create(struct virgl_winsys *vws,
     }
  
     res->res_handle = handle;

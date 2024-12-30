@@ -1,28 +1,8 @@
-From d748c03e83aed1a5f0176a264e03862d94d99418 Mon Sep 17 00:00:00 2001
-From: Lucas Fryzek <lfryzek@igalia.com>
-Date: Mon, 13 Mar 2023 14:39:50 -0400
-Subject: [PATCH 1/2] freedreno/drm/kgsl: Add KGSL backend for freedreno
-
----
- meson.build                                 |   4 +
- src/freedreno/drm/kgsl/kgsl_bo.c            | 295 ++++++++++++++++++++
- src/freedreno/drm/kgsl/kgsl_device.c        |  44 +++
- src/freedreno/drm/kgsl/kgsl_pipe.c          | 225 +++++++++++++++
- src/freedreno/drm/kgsl/kgsl_priv.h          |  54 ++++
- src/freedreno/drm/kgsl/kgsl_ringbuffer_sp.c | 119 ++++++++
- src/freedreno/drm/meson.build               |  11 +
- 7 files changed, 752 insertions(+)
- create mode 100644 src/freedreno/drm/kgsl/kgsl_bo.c
- create mode 100644 src/freedreno/drm/kgsl/kgsl_device.c
- create mode 100644 src/freedreno/drm/kgsl/kgsl_pipe.c
- create mode 100644 src/freedreno/drm/kgsl/kgsl_priv.h
- create mode 100644 src/freedreno/drm/kgsl/kgsl_ringbuffer_sp.c
-
 diff --git a/meson.build b/meson.build
-index 9fb4160cf54..565e24b0bc5 100644
+index 3340042..044dc8d 100644
 --- a/meson.build
 +++ b/meson.build
-@@ -278,6 +278,10 @@ if freedreno_kmds.length() != 0 and freedreno_kmds != [ 'msm' ] and with_freedre
+@@ -288,6 +288,10 @@ if freedreno_kmds.length() != 0 and freedreno_kmds != [ 'msm' ] and with_freedre
    endif
  endif
  
@@ -35,7 +15,7 @@ index 9fb4160cf54..565e24b0bc5 100644
    _glx = get_option('glx')
 diff --git a/src/freedreno/drm/kgsl/kgsl_bo.c b/src/freedreno/drm/kgsl/kgsl_bo.c
 new file mode 100644
-index 00000000000..d42400207ad
+index 0000000..6b49715
 --- /dev/null
 +++ b/src/freedreno/drm/kgsl/kgsl_bo.c
 @@ -0,0 +1,343 @@
@@ -384,7 +364,7 @@ index 00000000000..d42400207ad
 +}
 diff --git a/src/freedreno/drm/kgsl/kgsl_device.c b/src/freedreno/drm/kgsl/kgsl_device.c
 new file mode 100644
-index 00000000000..702b6666731
+index 0000000..702b666
 --- /dev/null
 +++ b/src/freedreno/drm/kgsl/kgsl_device.c
 @@ -0,0 +1,44 @@
@@ -434,7 +414,7 @@ index 00000000000..702b6666731
 +}
 diff --git a/src/freedreno/drm/kgsl/kgsl_pipe.c b/src/freedreno/drm/kgsl/kgsl_pipe.c
 new file mode 100644
-index 00000000000..d48f186eb06
+index 0000000..d48f186
 --- /dev/null
 +++ b/src/freedreno/drm/kgsl/kgsl_pipe.c
 @@ -0,0 +1,225 @@
@@ -665,7 +645,7 @@ index 00000000000..d48f186eb06
 +}
 diff --git a/src/freedreno/drm/kgsl/kgsl_priv.h b/src/freedreno/drm/kgsl/kgsl_priv.h
 new file mode 100644
-index 00000000000..ed65c952902
+index 0000000..ed65c95
 --- /dev/null
 +++ b/src/freedreno/drm/kgsl/kgsl_priv.h
 @@ -0,0 +1,54 @@
@@ -725,7 +705,7 @@ index 00000000000..ed65c952902
 +#endif
 diff --git a/src/freedreno/drm/kgsl/kgsl_ringbuffer_sp.c b/src/freedreno/drm/kgsl/kgsl_ringbuffer_sp.c
 new file mode 100644
-index 00000000000..e8b2842ac3d
+index 0000000..e8b2842
 --- /dev/null
 +++ b/src/freedreno/drm/kgsl/kgsl_ringbuffer_sp.c
 @@ -0,0 +1,119 @@
@@ -849,7 +829,7 @@ index 00000000000..e8b2842ac3d
 +    return fd_submit_sp_new(pipe, flush_submit_list);
 +}
 diff --git a/src/freedreno/drm/meson.build b/src/freedreno/drm/meson.build
-index ffaf6c902e2..24e6b960b1f 100644
+index ffaf6c9..24e6b96 100644
 --- a/src/freedreno/drm/meson.build
 +++ b/src/freedreno/drm/meson.build
 @@ -62,6 +62,17 @@ if freedreno_kmds.contains('virtio')
@@ -870,6 +850,3 @@ index ffaf6c902e2..24e6b960b1f 100644
  libfreedreno_drm = static_library(
    'freedreno_drm',
    [
--- 
-2.46.0
-

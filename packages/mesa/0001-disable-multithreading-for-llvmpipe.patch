@@ -1,6 +1,8 @@
+diff --git a/src/gallium/drivers/llvmpipe/lp_screen.c b/src/gallium/drivers/llvmpipe/lp_screen.c
+index 6a7a9c5..2436d02 100644
 --- a/src/gallium/drivers/llvmpipe/lp_screen.c
 +++ b/src/gallium/drivers/llvmpipe/lp_screen.c
-@@ -1183,6 +1183,9 @@
+@@ -1186,6 +1186,9 @@ llvmpipe_create_screen(struct sw_winsys *winsys)
     screen->num_threads = debug_get_num_option("LP_NUM_THREADS",
                                                screen->num_threads);
     screen->num_threads = MIN2(screen->num_threads, LP_MAX_THREADS);

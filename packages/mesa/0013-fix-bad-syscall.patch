@@ -1,5 +1,5 @@
 diff --git a/src/util/os_file.c b/src/util/os_file.c
-index 425c8378c05..1146ee4f538 100644
+index 425c837..1146ee4 100644
 --- a/src/util/os_file.c
 +++ b/src/util/os_file.c
 @@ -224,6 +224,10 @@ typedef void *kvaddr_t;
