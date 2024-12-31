@@ -14,7 +14,7 @@ TERMUX_PKG_SHA256=(
 	a7ced37f4102b745ac86d6a70a9da399cc139ff168ba6b8002b4d8d43c900c15
 )
 TERMUX_PKG_DEPENDS="angle-android"
-TERMUX_PKG_BUILD_DEPENDS="libxau, libxcb-static, libxcb-errors-static, libxdmcp-static"
+TERMUX_PKG_BUILD_DEPENDS="libxau-static (<= 1.0.12-1), libxcb-static, libxcb-errors-static, libxdmcp-static"
 TERMUX_PKG_HOSTBUILD=true
 
 termux_step_post_get_source() {
