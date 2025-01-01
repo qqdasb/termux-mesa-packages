@@ -43,7 +43,7 @@ index 4cc3391..cfc34e3 100644
 +   FD_UCHE_TRAP_BASE
  };
  
- /**
+ enum fd_reset_status {
 diff --git a/src/freedreno/drm/msm/msm_pipe.c b/src/freedreno/drm/msm/msm_pipe.c
 index 6e51900..c80f1b3 100644
 --- a/src/freedreno/drm/msm/msm_pipe.c
@@ -1373,10 +1373,10 @@ diff --git a/src/gallium/drivers/freedreno/freedreno_screen.c b/src/gallium/driv
 index 907da52..08eb17c 100644
 --- a/src/gallium/drivers/freedreno/freedreno_screen.c
 +++ b/src/gallium/drivers/freedreno/freedreno_screen.c
-@@ -608,6 +608,8 @@ fd_screen_get_param(struct pipe_screen *pscreen, enum pipe_cap param)
-       return 0;
-    case PIPE_CAP_THROTTLE:
-       return screen->driconf.enable_throttling;
+@@ -608,6 +607,8 @@ fd_screen_get_param(struct pipe_screen *pscreen, enum pipe_cap param)
+          return DRM_PRIME_CAP_IMPORT;
+       /* Fallthough to default case */
+       FALLTHROUGH;
 +   case PIPE_CAP_SHADER_CLOCK:
 +      return is_a6xx(screen);
     default:
