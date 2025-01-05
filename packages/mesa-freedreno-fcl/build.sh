@@ -18,7 +18,7 @@ TERMUX_PKG_BLACKLISTED_ARCHES="i686, x86_64"
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 --cmake-prefix-path $TERMUX_PREFIX
 -Dcpp_rtti=false
--Dgallium-dribers=freedreno,zink,llvmpipe
+-Dgallium-drivers=freedreno,zink,llvmpipe
 -Dvulkan-drivers=freedreno
 -Dfreedreno-kmds=msm,kgsl
 -Dgbm=disabled
