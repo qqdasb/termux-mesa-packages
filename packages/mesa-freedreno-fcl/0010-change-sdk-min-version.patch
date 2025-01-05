@@ -7,7 +7,7 @@ index 38ccb68..5317c10 100644
   * Available since API level 26.
   */
 -int32_t sync_merge(const char* name, int32_t fd1, int32_t fd2) __INTRODUCED_IN(26);
-+int32_t sync_merge(const char* name, int32_t fd1, int32_t fd2) __INTRODUCED_IN(25);
++int32_t sync_merge(const char* name, int32_t fd1, int32_t fd2) __INTRODUCED_IN(1);
  
  /**
   * Retrieve detailed information about a sync file and its fences.
@@ -16,7 +16,7 @@ index 38ccb68..5317c10 100644
   * Available since API level 26.
   */
 -struct sync_file_info* sync_file_info(int32_t fd) __INTRODUCED_IN(26);
-+struct sync_file_info* sync_file_info(int32_t fd) __INTRODUCED_IN(25);
++struct sync_file_info* sync_file_info(int32_t fd) __INTRODUCED_IN(1);
  
  /**
   * Get the array of fence infos from the sync file's info.
@@ -25,7 +25,7 @@ index 38ccb68..5317c10 100644
   * Available since API level 26.
   */
 -void sync_file_info_free(struct sync_file_info* info) __INTRODUCED_IN(26);
-+void sync_file_info_free(struct sync_file_info* info) __INTRODUCED_IN(25);
++void sync_file_info_free(struct sync_file_info* info) __INTRODUCED_IN(1);
  
  __END_DECLS
  
