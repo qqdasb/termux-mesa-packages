@@ -1,0 +1,14 @@
+diff --git a/src/gallium/drivers/llvmpipe/lp_texture.c b/src/gallium/drivers/llvmpipe/lp_texture.c
+index eddc576..df98766 100644
+--- a/src/gallium/drivers/llvmpipe/lp_texture.c
++++ b/src/gallium/drivers/llvmpipe/lp_texture.c
+@@ -71,6 +71,9 @@
+ #include <util/os_file.h>
+ #endif
+ 
++#include "syscall.h"
++#define memfd_create(name,flags) syscall(SYS_memfd_create,name,flags)
++
+ #if MESA_DEBUG
+ static struct llvmpipe_resource resource_list;
+ static simple_mtx_t resource_list_mutex = SIMPLE_MTX_INITIALIZER;

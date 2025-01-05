@@ -20,6 +20,7 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -Dcpp_rtti=false
 -Dgallium-drivers=freedreno,zink,llvmpipe
 -Dvulkan-drivers=freedreno
+-Dvulkan-layers=
 -Dfreedreno-kmds=msm,kgsl
 -Dgbm=disabled
 -Dopengl=true
