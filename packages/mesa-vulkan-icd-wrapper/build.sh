@@ -3,11 +3,11 @@ TERMUX_PKG_DESCRIPTION="Android Vulkan wrapper"
 TERMUX_PKG_LICENSE="MIT"
 TERMUX_PKG_LICENSE_FILE="docs/license.rst"
 TERMUX_PKG_MAINTAINER="xMeM <haooy@outlook.com>"
-TERMUX_PKG_VERSION="24.3.1"
-TERMUX_PKG_REVISION=5
+TERMUX_PKG_VERSION="25.0.0"
+TERMUX_PKG_REVISION=1
 TERMUX_PKG_SRCURL=git+https://github.com/xMeM/mesa
 TERMUX_PKG_GIT_BRANCH=wrapper
-_COMMIT=edacc52c8c0940b72e4754996fbdc5630473117d
+_COMMIT=03d925413e1f44d504a42cea566dbbe83a22a2fe
 TERMUX_PKG_DEPENDS="libandroid-shmem, libc++, libdrm, libx11, libxcb, libxshmfence, libwayland, vulkan-loader-generic, zlib, zstd"
 TERMUX_PKG_BUILD_DEPENDS="libwayland-protocols, libxrandr, xorgproto"
 TERMUX_PKG_API_LEVEL=26
@@ -23,6 +23,7 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -Dgallium-drivers=
 -Dxmlconfig=disabled
 -Dvulkan-drivers=wrapper
+-Db_ndebug=true
 "
 
 termux_step_post_get_source() {
