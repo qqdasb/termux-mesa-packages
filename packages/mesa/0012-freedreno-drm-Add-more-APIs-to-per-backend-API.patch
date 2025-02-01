@@ -238,6 +238,7 @@ index e41699a..3dce9df 100644
     caps->throttle = screen->driconf.enable_throttling;
 +   caps->dmabuf = (fd_get_features(screen->dev) & FD_FEATURE_IMPORT_DMABUF) ? 
 +                  DRM_PRIME_CAP_IMPORT :
++                  FALLTHROUGH;
  
     caps->min_line_width =
     caps->min_line_width_aa =
