@@ -3,7 +3,6 @@ TERMUX_PKG_DESCRIPTION="An open-source implementation of the OpenGL specificatio
 TERMUX_PKG_LICENSE="MIT"
 TERMUX_PKG_LICENSE_FILE="docs/license.rst"
 TERMUX_PKG_MAINTAINER="@termux"
-TERMUX_PKG_VERSION=24.3.4
 TERMUX_PKG_VERSION="25.1.0-dev"
 TERMUX_PKG_REVISION=1
 _LLVM_MAJOR_VERSION=$(. $TERMUX_SCRIPTDIR/packages/libllvm/build.sh; echo $LLVM_MAJOR_VERSION)
@@ -20,6 +19,7 @@ TERMUX_PKG_REPLACES="libmesa"
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 --cmake-prefix-path $TERMUX_PREFIX
 -Dcpp_rtti=false
+# Gallium VA is required by lavapipe
 -Dgallium-va=enabled
 -Dgbm=enabled
 -Dopengl=true
