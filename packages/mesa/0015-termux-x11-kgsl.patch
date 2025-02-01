@@ -1,7 +1,7 @@
-diff --git a/mesa-org/src/egl/drivers/dri2/egl_dri2.c b/mesa-mod/src/egl/drivers/dri2/egl_dri2.c
+diff --git a/src/egl/drivers/dri2/egl_dri2.c b/src/egl/drivers/dri2/egl_dri2.c
 index e813aa6..8766e7d 100644
---- a/mesa-org/src/egl/drivers/dri2/egl_dri2.c
-+++ b/mesa-mod/src/egl/drivers/dri2/egl_dri2.c
+--- a/src/egl/drivers/dri2/egl_dri2.c
++++ b/src/egl/drivers/dri2/egl_dri2.c
 @@ -841,6 +841,9 @@ dri2_setup_device(_EGLDisplay *disp, EGLBoolean software)
     _EGLDevice *dev;
     int render_fd;
@@ -12,10 +12,10 @@ index e813aa6..8766e7d 100644
     /* If we're not software, we need a DRM node FD */
     assert(software || dri2_dpy->fd_render_gpu >= 0);
  
-diff --git a/mesa-org/src/egl/drivers/dri2/platform_drm.c b/mesa-mod/src/egl/drivers/dri2/platform_drm.c
+diff --git a/src/egl/drivers/dri2/platform_drm.c b/src/egl/drivers/dri2/platform_drm.c
 index 813e5d3..d08f23a 100644
---- a/mesa-org/src/egl/drivers/dri2/platform_drm.c
-+++ b/mesa-mod/src/egl/drivers/dri2/platform_drm.c
+--- a/src/egl/drivers/dri2/platform_drm.c
++++ b/src/egl/drivers/dri2/platform_drm.c
 @@ -583,6 +583,8 @@ dri2_initialize_drm(_EGLDisplay *disp)
  
           dri2_dpy->fd_display_gpu =
@@ -34,10 +34,10 @@ index 813e5d3..d08f23a 100644
        if (dri2_dpy->fd_render_gpu < 0) {
           err = "DRI2: failed to get compatible render device";
           goto cleanup;
-diff --git a/mesa-org/src/egl/drivers/dri2/platform_surfaceless.c b/mesa-mod/src/egl/drivers/dri2/platform_surfaceless.c
+diff --git a/src/egl/drivers/dri2/platform_surfaceless.c b/src/egl/drivers/dri2/platform_surfaceless.c
 index 87d06c5..b6f9c21 100644
---- a/mesa-org/src/egl/drivers/dri2/platform_surfaceless.c
-+++ b/mesa-mod/src/egl/drivers/dri2/platform_surfaceless.c
+--- a/src/egl/drivers/dri2/platform_surfaceless.c
++++ b/src/egl/drivers/dri2/platform_surfaceless.c
 @@ -339,6 +339,20 @@ dri2_initialize_surfaceless(_EGLDisplay *disp)
        driver_loaded = surfaceless_probe_device_sw(disp);
     }
@@ -59,10 +59,10 @@ index 87d06c5..b6f9c21 100644
     if (!driver_loaded) {
        err = "DRI2: failed to load driver";
        goto cleanup;
-diff --git a/mesa-org/src/egl/drivers/dri2/platform_wayland.c b/mesa-mod/src/egl/drivers/dri2/platform_wayland.c
+diff --git a/src/egl/drivers/dri2/platform_wayland.c b/src/egl/drivers/dri2/platform_wayland.c
 index 1f66a92..4f7e125 100644
---- a/mesa-org/src/egl/drivers/dri2/platform_wayland.c
-+++ b/mesa-mod/src/egl/drivers/dri2/platform_wayland.c
+--- a/src/egl/drivers/dri2/platform_wayland.c
++++ b/src/egl/drivers/dri2/platform_wayland.c
 @@ -2280,8 +2280,12 @@ dri2_initialize_wayland_drm(_EGLDisplay *disp)
     if (roundtrip(dri2_dpy) < 0)
        goto cleanup;
@@ -78,10 +78,10 @@ index 1f66a92..4f7e125 100644
  
     loader_get_user_preferred_fd(&dri2_dpy->fd_render_gpu,
                                  &dri2_dpy->fd_display_gpu);
-diff --git a/mesa-org/src/egl/main/eglapi.c b/mesa-mod/src/egl/main/eglapi.c
+diff --git a/src/egl/main/eglapi.c b/src/egl/main/eglapi.c
 index c4fa4ee..6be4686 100644
---- a/mesa-org/src/egl/main/eglapi.c
-+++ b/mesa-mod/src/egl/main/eglapi.c
+--- a/src/egl/main/eglapi.c
++++ b/src/egl/main/eglapi.c
 @@ -693,6 +693,7 @@ eglInitialize(EGLDisplay dpy, EGLint *major, EGLint *minor)
  
        const char *env = os_get_option("MESA_LOADER_DRIVER_OVERRIDE");
@@ -90,10 +90,10 @@ index c4fa4ee..6be4686 100644
  
        const char *gallium_hud_env = os_get_option("GALLIUM_HUD");
        disp->Options.GalliumHudWarn =
-diff --git a/mesa-org/src/egl/main/egldisplay.h b/mesa-mod/src/egl/main/egldisplay.h
+diff --git a/src/egl/main/egldisplay.h b/src/egl/main/egldisplay.h
 index d510483..5be9783 100644
---- a/mesa-org/src/egl/main/egldisplay.h
-+++ b/mesa-mod/src/egl/main/egldisplay.h
+--- a/src/egl/main/egldisplay.h
++++ b/src/egl/main/egldisplay.h
 @@ -201,6 +201,7 @@ struct _egl_display {
  
     /* options that affect how the driver initializes the display */
@@ -102,10 +102,10 @@ index d510483..5be9783 100644
        EGLBoolean Zink;           /**< Use kopper only */
        EGLBoolean FallbackZink;   /**< True if zink is tried as fallback */
        EGLBoolean ForceSoftware;  /**< Use software path only */
-diff --git a/mesa-org/src/gallium/frontends/dri/loader_dri3_helper.c b/mesa-mod/src/gallium/frontends/dri/loader_dri3_helper.c
+diff --git a/src/gallium/frontends/dri/loader_dri3_helper.c b/src/gallium/frontends/dri/loader_dri3_helper.c
 index 9e4ca3f..480f3bd 100644
---- a/mesa-org/src/gallium/frontends/dri/loader_dri3_helper.c
-+++ b/mesa-mod/src/gallium/frontends/dri/loader_dri3_helper.c
+--- a/src/gallium/frontends/dri/loader_dri3_helper.c
++++ b/src/gallium/frontends/dri/loader_dri3_helper.c
 @@ -26,11 +26,9 @@
  #include <unistd.h>
  #include <string.h>
@@ -297,10 +297,10 @@ index 9e4ca3f..480f3bd 100644
     free(buffer);
  no_buffer:
     return NULL;
-diff --git a/mesa-org/src/loader/loader.c b/mesa-mod/src/loader/loader.c
+diff --git a/src/loader/loader.c b/src/loader/loader.c
 index e8a9b76..079ba09 100644
---- a/mesa-org/src/loader/loader.c
-+++ b/mesa-mod/src/loader/loader.c
+--- a/src/loader/loader.c
++++ b/src/loader/loader.c
 @@ -647,6 +647,12 @@ loader_get_linux_pci_id_for_fd(int fd, int *vendor_id, int *chip_id)
  bool
  loader_get_pci_id_for_fd(int fd, int *vendor_id, int *chip_id)
@@ -314,10 +314,10 @@ index e8a9b76..079ba09 100644
  #ifdef __linux__
     /* Implementation without causing full enumeration of DRM devices. */
     if (loader_get_linux_pci_id_for_fd(fd, vendor_id, chip_id))
-diff --git a/mesa-org/src/x11/loader_x11.c b/mesa-mod/src/x11/loader_x11.c
+diff --git a/src/x11/loader_x11.c b/src/x11/loader_x11.c
 index 75eb560..6493a9d 100644
---- a/mesa-org/src/x11/loader_x11.c
-+++ b/mesa-mod/src/x11/loader_x11.c
+--- a/src/x11/loader_x11.c
++++ b/src/x11/loader_x11.c
 @@ -21,6 +21,7 @@
   * OF THIS SOFTWARE.
   */

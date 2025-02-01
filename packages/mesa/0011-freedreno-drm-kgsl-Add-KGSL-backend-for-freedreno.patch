@@ -1,7 +1,7 @@
-diff --git a/mesa-org/meson.build b/mesa-mod/meson.build
+diff --git a/meson.build b/meson.build
 index 181ebee..517c084 100644
---- a/mesa-org/meson.build
-+++ b/mesa-mod/meson.build
+--- a/meson.build
++++ b/meson.build
 @@ -292,6 +292,10 @@ if freedreno_kmds.length() != 0 and freedreno_kmds != [ 'msm' ] and with_freedre
    endif
  endif
@@ -13,11 +13,11 @@ index 181ebee..517c084 100644
  with_dri = false
  if with_gallium and system_has_kms_drm
    _glx = get_option('glx')
-diff --git a/mesa-mod/src/freedreno/drm/kgsl/kgsl_bo.c b/mesa-mod/src/freedreno/drm/kgsl/kgsl_bo.c
+diff --git a/src/freedreno/drm/kgsl/kgsl_bo.c b/src/freedreno/drm/kgsl/kgsl_bo.c
 new file mode 100644
 index 0000000..6b49715
 --- /dev/null
-+++ b/mesa-mod/src/freedreno/drm/kgsl/kgsl_bo.c
++++ b/src/freedreno/drm/kgsl/kgsl_bo.c
 @@ -0,0 +1,343 @@
 +#include "kgsl_priv.h"
 +#include "util/os_file.h"
@@ -362,11 +362,11 @@ index 0000000..6b49715
 +
 +    return bo;
 +}
-diff --git a/mesa-mod/src/freedreno/drm/kgsl/kgsl_device.c b/mesa-mod/src/freedreno/drm/kgsl/kgsl_device.c
+diff --git a/src/freedreno/drm/kgsl/kgsl_device.c b/src/freedreno/drm/kgsl/kgsl_device.c
 new file mode 100644
 index 0000000..702b666
 --- /dev/null
-+++ b/mesa-mod/src/freedreno/drm/kgsl/kgsl_device.c
++++ b/src/freedreno/drm/kgsl/kgsl_device.c
 @@ -0,0 +1,44 @@
 +#include "kgsl_priv.h"
 +
@@ -412,11 +412,11 @@ index 0000000..702b666
 +kgsl_device_destroy(struct fd_device *dev)
 +{
 +}
-diff --git a/mesa-mod/src/freedreno/drm/kgsl/kgsl_pipe.c b/mesa-mod/src/freedreno/drm/kgsl/kgsl_pipe.c
+diff --git a/src/freedreno/drm/kgsl/kgsl_pipe.c b/src/freedreno/drm/kgsl/kgsl_pipe.c
 new file mode 100644
 index 0000000..d48f186
 --- /dev/null
-+++ b/mesa-mod/src/freedreno/drm/kgsl/kgsl_pipe.c
++++ b/src/freedreno/drm/kgsl/kgsl_pipe.c
 @@ -0,0 +1,225 @@
 +#include "kgsl_priv.h"
 +#include "freedreno_ringbuffer_sp.h"
@@ -643,11 +643,11 @@ index 0000000..d48f186
 +        fd_pipe_del(pipe);
 +    return NULL;
 +}
-diff --git a/mesa-mod/src/freedreno/drm/kgsl/kgsl_priv.h b/mesa-mod/src/freedreno/drm/kgsl/kgsl_priv.h
+diff --git a/src/freedreno/drm/kgsl/kgsl_priv.h b/src/freedreno/drm/kgsl/kgsl_priv.h
 new file mode 100644
 index 0000000..ed65c95
 --- /dev/null
-+++ b/mesa-mod/src/freedreno/drm/kgsl/kgsl_priv.h
++++ b/src/freedreno/drm/kgsl/kgsl_priv.h
 @@ -0,0 +1,54 @@
 +#ifndef KGSL_PRIV_H
 +#define KGSL_PRIV_H
@@ -703,11 +703,11 @@ index 0000000..ed65c95
 +void kgsl_bo_close_handle(struct fd_bo *bo);
 +
 +#endif
-diff --git a/mesa-mod/src/freedreno/drm/kgsl/kgsl_ringbuffer_sp.c b/mesa-mod/src/freedreno/drm/kgsl/kgsl_ringbuffer_sp.c
+diff --git a/src/freedreno/drm/kgsl/kgsl_ringbuffer_sp.c b/src/freedreno/drm/kgsl/kgsl_ringbuffer_sp.c
 new file mode 100644
 index 0000000..e8b2842
 --- /dev/null
-+++ b/mesa-mod/src/freedreno/drm/kgsl/kgsl_ringbuffer_sp.c
++++ b/src/freedreno/drm/kgsl/kgsl_ringbuffer_sp.c
 @@ -0,0 +1,119 @@
 +#include "kgsl_priv.h"
 +#include "freedreno_ringbuffer_sp.h"
@@ -828,10 +828,10 @@ index 0000000..e8b2842
 +{
 +    return fd_submit_sp_new(pipe, flush_submit_list);
 +}
-diff --git a/mesa-org/src/freedreno/drm/meson.build b/mesa-mod/src/freedreno/drm/meson.build
+diff --git a/src/freedreno/drm/meson.build b/src/freedreno/drm/meson.build
 index ffaf6c9..24e6b96 100644
---- a/mesa-org/src/freedreno/drm/meson.build
-+++ b/mesa-mod/src/freedreno/drm/meson.build
+--- a/src/freedreno/drm/meson.build
++++ b/src/freedreno/drm/meson.build
 @@ -62,6 +62,17 @@ if freedreno_kmds.contains('virtio')
    ]
  endif
