@@ -236,9 +236,9 @@ index e41699a..3dce9df 100644
     caps->shader_stencil_export = is_a6xx(screen);
     caps->two_sided_color = false;
     caps->throttle = screen->driconf.enable_throttling;
-+   caps->dmabuf_import = (fd_get_features(screen->dev) & FD_FEATURE_IMPORT_DMABUF) ? 
-+                         DRM_PRIME_CAP_IMPORT :
-+                         DEFAULT_CAPABILITY;
++   caps->dmabuf = (fd_get_features(screen->dev) & FD_FEATURE_IMPORT_DMABUF) ? 
++                   DRM_PRIME_CAP_IMPORT :
++                   FALLTHROUGH;
  
     caps->min_line_width =
     caps->min_line_width_aa =
